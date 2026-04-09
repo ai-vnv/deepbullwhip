@@ -3,9 +3,9 @@
 [![CI](https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml/badge.svg)](https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ai-vnv/deepbullwhip/graph/badge.svg)](https://codecov.io/gh/ai-vnv/deepbullwhip)
 [![Docs](https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747)](https://ai-vnv.github.io/deepbullwhip)
-[![PyPI](https://img.shields.io/pypi/v/deepbullwhip)](https://pypi.org/project/deepbullwhip/)
-[![Python](https://img.shields.io/pypi/pyversions/deepbullwhip)](https://pypi.org/project/deepbullwhip/)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/ai-vnv/deepbullwhip)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-0.1.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
 
 **Multi-tier supply chain bullwhip effect simulator with modular demand models, ordering policies, and cost functions.**
 

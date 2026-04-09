@@ -3,6 +3,7 @@
 from deepbullwhip.chain.config import EchelonConfig, default_semiconductor_config
 from deepbullwhip.chain.echelon import SupplyChainEchelon
 from deepbullwhip.chain.serial import SerialSupplyChain
+from deepbullwhip.chain.vectorized import BatchSimulationResult, VectorizedSupplyChain
 from deepbullwhip.cost.newsvendor import NewsvendorCost
 from deepbullwhip.demand.semiconductor import SemiconductorDemandGenerator
 from deepbullwhip.policy.order_up_to import OrderUpToPolicy
@@ -17,4 +18,6 @@ __all__ = [
     "SupplyChainEchelon",
     "EchelonConfig",
     "default_semiconductor_config",
+    "VectorizedSupplyChain",
+    "BatchSimulationResult",
 ]

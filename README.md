@@ -11,6 +11,10 @@
 
 Maintained by the [AI Verification & Validation (AI V&V) Lab](https://ai-vnv.kfupm.io) at King Fahd University of Petroleum & Minerals (KFUPM).
 
+<p align="center">
+  <img src="docs/assets/summary_dashboard.png" alt="DeepBullwhip Summary Dashboard" width="700">
+</p>
+
 ---
 
 ## Overview

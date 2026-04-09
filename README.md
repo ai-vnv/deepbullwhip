@@ -230,8 +230,12 @@ deepbullwhip/
     ├── plots.py                # 10 publication-grade plot functions
     └── network.py              # Network diagram + geographic map
 
-tests/                          # 96 unit tests, 99% coverage
-notebooks/tutorial.ipynb        # Pedagogical walkthrough
+tests/                          # 117 unit tests, 99% coverage
+notebooks/
+├── tutorial.ipynb              # Full API walkthrough
+├── 01_supply_chain_cost.ipynb  # Cost simulation & service level tradeoffs
+├── 02_bullwhip_effect.ipynb    # Bullwhip confirmation & Monte Carlo validation
+└── 03_custom_policies.ipynb    # Comparing ordering policies (OUT, fixed, smoothed)
 scripts/visualize.py            # CLI figure generation
 simulation.ipynb                # Original research notebook
 ```

@@ -35,7 +35,7 @@ def main() -> None:
     parser.add_argument("--save", action="store_true", help="Save figures as PDF")
     parser.add_argument("--dpi", type=int, default=300)
     parser.add_argument("--outdir", type=str, default="figures")
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--seed", type=int, default=966)
     parser.add_argument("--T", type=int, default=156)
     args = parser.parse_args()
 

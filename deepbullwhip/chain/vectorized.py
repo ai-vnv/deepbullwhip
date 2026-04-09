@@ -15,7 +15,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import stats
 
-from deepbullwhip._types import EchelonResult, SimulationResult, TimeSeries
+from deepbullwhip._types import EchelonResult, SimulationResult
 from deepbullwhip.chain.config import EchelonConfig, default_semiconductor_config
 
 

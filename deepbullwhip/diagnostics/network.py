@@ -18,7 +18,6 @@ import numpy as np
 
 from deepbullwhip._types import SimulationResult
 from deepbullwhip.diagnostics.plots import (
-    COLORS,
     DOUBLE_COL,
     GOLDEN,
     SINGLE_COL,
@@ -245,7 +244,6 @@ def plot_supply_chain_map(
             er = sim_result.echelon_results[k]
             label += f"\nBW={er.bullwhip_ratio:.2f}"
 
-        offset_y = 0.4
         ax.annotate(
             label, (node.lon, node.lat),
             textcoords="offset points", xytext=(8, 8),

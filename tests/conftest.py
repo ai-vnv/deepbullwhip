@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 
 from deepbullwhip import (
-    EchelonConfig,
     NewsvendorCost,
     OrderUpToPolicy,
     SemiconductorDemandGenerator,

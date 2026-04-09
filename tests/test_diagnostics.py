@@ -16,7 +16,6 @@ from deepbullwhip import (
     SemiconductorDemandGenerator,
     SerialSupplyChain,
 )
-from deepbullwhip._types import SimulationResult
 from deepbullwhip.diagnostics.network import (
     NodeLocation,
     SupplyChainNetwork,

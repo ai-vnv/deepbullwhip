@@ -503,7 +503,7 @@ def plot_summary_dashboard(
 
     # Combined legend
     lines = [bars1, bars2]
-    labs = [l.get_label() for l in lines]
+    labs = [item.get_label() for item in lines]
     ax.legend(lines, labs, loc="upper left", fontsize=6)
 
     for a in [axes[0, 0], axes[0, 1]]:

@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from scipy import stats
 
 from deepbullwhip.policy.base import OrderingPolicy
@@ -44,6 +45,3 @@ class TestOrderUpToPolicy:
     def test_abc_interface(self):
         policy = OrderUpToPolicy(lead_time=2)
         assert isinstance(policy, OrderingPolicy)
-
-
-import pytest

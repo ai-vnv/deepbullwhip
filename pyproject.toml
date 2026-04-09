@@ -6,7 +6,35 @@ build-backend = "hatchling.build"
 name = "deepbullwhip"
 version = "0.1.0"
 description = "Multi-tier supply chain bullwhip effect simulator"
+readme = "README.md"
+license = {text = "MIT"}
 requires-python = ">=3.10"
+authors = [
+    {name = "Mansur M. Arief", email = "mansur.arief@kfupm.edu.sa"},
+]
+maintainers = [
+    {name = "Mansur M. Arief", email = "mansur.arief@kfupm.edu.sa"},
+]
+keywords = [
+    "supply-chain",
+    "bullwhip-effect",
+    "simulation",
+    "inventory-management",
+    "newsvendor",
+    "order-up-to",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+]
 dependencies = [
     "numpy>=1.24",
     "pandas>=2.0",
@@ -23,6 +51,24 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
 ]
+docs = [
+    "mkdocs>=1.5",
+    "mkdocs-material>=9.0",
+    "mkdocstrings[python]>=0.24",
+]
+
+[project.urls]
+Homepage = "https://github.com/ai-vnv/deepbullwhip"
+Repository = "https://github.com/ai-vnv/deepbullwhip"
+Documentation = "https://ai-vnv.github.io/deepbullwhip"
+Issues = "https://github.com/ai-vnv/deepbullwhip/issues"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["deepbullwhip"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 95

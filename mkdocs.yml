@@ -1,0 +1,58 @@
+site_name: DeepBullwhip
+site_description: Multi-tier supply chain bullwhip effect simulator
+site_url: https://ai-vnv.github.io/deepbullwhip
+repo_url: https://github.com/ai-vnv/deepbullwhip
+repo_name: ai-vnv/deepbullwhip
+
+theme:
+  name: material
+  palette:
+    primary: custom
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            heading_level: 3
+            docstring_style: numpy
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - API Reference:
+    - Demand: api/demand.md
+    - Policy: api/policy.md
+    - Cost: api/cost.md
+    - Chain: api/chain.md
+    - Diagnostics: api/diagnostics.md
+    - Sensitivity: api/sensitivity.md
+  - Notebooks:
+    - "01: Supply Chain Cost": notebooks/01-cost.md
+    - "02: Bullwhip Effect": notebooks/02-bullwhip.md
+    - "03: Custom Policies": notebooks/03-policies.md
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition
+  - tables
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

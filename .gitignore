@@ -32,5 +32,8 @@ figures/
 # Jupyter
 .ipynb_checkpoints/
 
+# MkDocs
+site/
+
 # Claude Code
 .claude/

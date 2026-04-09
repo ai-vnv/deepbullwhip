@@ -1,5 +1,12 @@
 # DeepBullwhip
 
+[![CI](https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml/badge.svg)](https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ai-vnv/deepbullwhip/graph/badge.svg)](https://codecov.io/gh/ai-vnv/deepbullwhip)
+[![Docs](https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747)](https://ai-vnv.github.io/deepbullwhip)
+[![PyPI](https://img.shields.io/pypi/v/deepbullwhip)](https://pypi.org/project/deepbullwhip/)
+[![Python](https://img.shields.io/pypi/pyversions/deepbullwhip)](https://pypi.org/project/deepbullwhip/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **Multi-tier supply chain bullwhip effect simulator with modular demand models, ordering policies, and cost functions.**
 
 Maintained by the [AI Verification & Validation (AI V&V) Lab](https://ai-vnv.kfupm.io) at King Fahd University of Petroleum & Minerals (KFUPM).
@@ -37,7 +44,7 @@ tradeoff in ML-driven semiconductor supply chains (see `simulation.ipynb`).
 
 ```bash
 # Clone the repository
-git clone https://github.com/ai-vnv-lab/deepbullwhip.git
+git clone https://github.com/ai-vnv/deepbullwhip.git
 cd deepbullwhip
 
 # Create virtual environment and install
@@ -265,13 +272,18 @@ If you use DeepBullwhip in your research, please cite:
 ```bibtex
 @software{deepbullwhip,
   title  = {DeepBullwhip: Multi-Tier Supply Chain Bullwhip Effect Simulator},
-  author = {{AI V\&V Lab, KFUPM}},
-  url    = {https://github.com/ai-vnv-lab/deepbullwhip},
+  author = {Arief, Mansur M.},
+  url    = {https://github.com/ai-vnv/deepbullwhip},
   year   = {2025}
 }
 ```
 
+## Documentation
+
+Full API documentation is available at [ai-vnv.github.io/deepbullwhip](https://ai-vnv.github.io/deepbullwhip).
+
 ## License
 
-This project is developed and maintained by the
-[AI V&V Lab](https://ai-vnv.kfupm.io) at KFUPM.
+MIT License. See [LICENSE](LICENSE) for details.
+
+Developed and maintained by the [AI V&V Lab](https://ai-vnv.kfupm.io) at KFUPM.

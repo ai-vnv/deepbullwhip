@@ -1,6 +1,8 @@
 from deepbullwhip.cost.base import CostFunction
+from deepbullwhip.registry import register
 
 
+@register("cost", "newsvendor")
 class NewsvendorCost(CostFunction):
     """Newsvendor-style cost: h * inventory^+ + b * inventory^-.
 

@@ -2,8 +2,10 @@ import numpy as np
 
 from deepbullwhip._types import TimeSeries
 from deepbullwhip.demand.base import DemandGenerator
+from deepbullwhip.registry import register
 
 
+@register("demand", "semiconductor_ar1")
 class SemiconductorDemandGenerator(DemandGenerator):
     """AR(1) + seasonal + structural-shock demand, calibrated to WSTS data.
 

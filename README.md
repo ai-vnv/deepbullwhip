@@ -5,7 +5,7 @@
 [![Docs](https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747)](https://ai-vnv.github.io/deepbullwhip)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/ai-vnv/deepbullwhip)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.1.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
+[![Version](https://img.shields.io/badge/version-0.2.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
 
 **Multi-tier supply chain bullwhip effect simulator with modular demand models, ordering policies, and cost functions.**
 
@@ -36,12 +36,16 @@ tradeoff in ML-driven semiconductor supply chains (see `simulation.ipynb`).
 
 | Component | Description |
 |-----------|-------------|
-| **Demand generators** | Pluggable via `DemandGenerator` ABC. Default: AR(1) + seasonal + structural shock, calibrated to WSTS semiconductor data |
-| **Ordering policies** | Pluggable via `OrderingPolicy` ABC. Default: Order-Up-To (OUT / base-stock) with configurable service level |
-| **Cost functions** | Pluggable via `CostFunction` ABC. Default: Newsvendor (holding + backorder) with per-echelon h and b |
+| **Demand generators** | Pluggable via `DemandGenerator` ABC. Built-in: AR(1) semiconductor, Beer Game step, ARMA(p,q), Replay from data |
+| **Ordering policies** | Pluggable via `OrderingPolicy` ABC. Built-in: OUT, Proportional OUT, Smoothing OUT, Constant Order |
+| **Cost functions** | Pluggable via `CostFunction` ABC. Built-in: Newsvendor (h+b), Perishable (h+b+obsolescence) |
+| **Forecasters** | Pluggable via `Forecaster` ABC. Built-in: Naive, Moving Average, Exponential Smoothing |
+| **Benchmarking** | `BenchmarkRunner` for standardized policy/forecaster comparison with LaTeX/CSV export |
+| **Datasets** | Built-in datasets: Beer Game, WSTS semiconductor, synthetic AR(1)/ARMA, M5 Walmart |
+| **Registry** | Decorator-based `@register` system for easy extensibility and model discovery |
 | **Supply chain** | `SerialSupplyChain` supporting arbitrary K-echelon serial topologies via `EchelonConfig` |
 | **Diagnostics** | 10 publication-grade plot functions + network diagram + geographic map visualization |
-| **Metrics** | Bullwhip ratio, fill rate, cumulative bullwhip, theoretical lower bounds |
+| **Metrics** | BWR, NSAmp, Fill Rate, Total Cost, Chen lower bound (standalone module + backward-compat diagnostics) |
 | **Vectorized engine** | `VectorizedSupplyChain` — matrix-based `(N, K, T)` simulation for Monte Carlo batching. **~100x speedup** over serial for N=1000 paths |
 
 ## Installation
@@ -62,6 +66,7 @@ pip install -e ".[dev]"
 - **Core:** numpy, scipy, pandas, matplotlib
 - **Dev:** pytest, pytest-cov
 - **Optional (ML):** scikit-learn, torch
+- **Optional (Benchmark):** kaggle, tabulate
 
 ## Quick Start
 
@@ -87,6 +92,59 @@ for k, er in enumerate(result.echelon_results):
     print(f"E{k+1}: {er.name:12s}  BW={er.bullwhip_ratio:.2f}  "
           f"FR={er.fill_rate:.0%}  Cost={er.total_cost:,.0f}")
 ```
+
+## Benchmarking (v0.2.0)
+
+Compare ordering policies and forecasting methods in a single call:
+
+```python
+from deepbullwhip.benchmark import BenchmarkRunner
+
+runner = BenchmarkRunner(
+    chain_config="semiconductor_4tier",  # or "beer_game", "consumer_2tier"
+    demand="semiconductor_ar1",          # or "beer_game", "arma"
+    T=156, N=100, seed=42,
+)
+
+# Compare policies
+results = runner.run(
+    policies=[
+        "order_up_to",
+        ("proportional_out", {"alpha": 0.3}),
+        ("constant_order", {"order_quantity": 11.6}),
+    ],
+    forecasters=["naive", ("moving_average", {"window": 10})],
+    metrics=["BWR", "FILL_RATE", "TC"],
+)
+
+# View results
+print(results.pivot_table(index=["policy","echelon"], columns="metric", values="value"))
+
+# Export
+runner.export_csv(results, "benchmark_results.csv")
+runner.export_latex(results, "benchmark_table.tex", caption="Policy Comparison")
+```
+
+### Adding Custom Models
+
+Extend the framework with the 3-step pattern:
+
+```python
+from deepbullwhip.policy.base import OrderingPolicy
+from deepbullwhip.registry import register
+
+@register("policy", "my_policy")
+class MyPolicy(OrderingPolicy):
+    def __init__(self, lead_time: int, service_level: float = 0.95):
+        self.lead_time = lead_time
+    def compute_order(self, inventory_position, forecast_mean, forecast_std):
+        return max(0.0, forecast_mean * 1.5 - inventory_position)
+
+# Now use it in benchmarks:
+results = runner.run(policies=["order_up_to", "my_policy"])
+```
+
+See [`notebooks/add_your_own_model.ipynb`](notebooks/add_your_own_model.ipynb) for a full walkthrough.
 
 ## Default Supply Chain Configuration
 
@@ -221,34 +279,59 @@ python scripts/visualize.py --save --outdir figures --dpi 600
 deepbullwhip/
 ├── __init__.py                 # Public API re-exports
 ├── _types.py                   # TimeSeries, EchelonResult, SimulationResult
+├── registry.py                 # Decorator-based @register system
 ├── sensitivity.py              # Forecast sensitivity (lambda_f)
 ├── demand/
 │   ├── base.py                 # DemandGenerator ABC
-│   └── semiconductor.py        # AR(1) + seasonal + shock
+│   ├── semiconductor.py        # AR(1) + seasonal + shock
+│   ├── beer_game.py            # Classic Beer Game step demand
+│   ├── arma.py                 # General ARMA(p,q) process
+│   └── replay.py              # Replay from historical data
 ├── policy/
 │   ├── base.py                 # OrderingPolicy ABC
-│   └── order_up_to.py          # Order-Up-To (OUT) policy
+│   ├── order_up_to.py          # Order-Up-To (OUT) policy
+│   ├── proportional_out.py     # Proportional OUT (POUT)
+│   ├── constant_order.py       # Constant order (BWR=0)
+│   └── smoothing_out.py        # Smoothing OUT
 ├── cost/
 │   ├── base.py                 # CostFunction ABC
-│   └── newsvendor.py           # Newsvendor h/b cost
+│   ├── newsvendor.py           # Newsvendor h/b cost
+│   └── perishable.py           # Perishable (h+b+obsolescence)
+├── forecast/
+│   ├── base.py                 # Forecaster ABC
+│   ├── naive.py                # Naive (sample mean/std)
+│   ├── moving_average.py       # Rolling window MA
+│   └── exponential_smoothing.py # Single exponential smoothing
+├── metrics/
+│   ├── bullwhip.py             # BWR, CumulativeBWR
+│   ├── inventory.py            # NSAmp, FillRate
+│   ├── cost.py                 # TotalCost
+│   └── bounds.py               # ChenLowerBound
+├── benchmark/
+│   ├── runner.py               # BenchmarkRunner
+│   ├── configs.py              # Predefined chain configs
+│   └── report.py               # LaTeX, Markdown, CSV export
+├── datasets/
+│   ├── beer_game.py            # Beer Game step demand
+│   ├── synthetic.py            # AR(1), ARMA generators
+│   ├── m5.py                   # M5 Walmart data loader
+│   └── wsts.py                 # WSTS semiconductor data
 ├── chain/
 │   ├── config.py               # EchelonConfig + defaults
 │   ├── echelon.py              # SupplyChainEchelon
 │   ├── serial.py               # SerialSupplyChain
 │   └── vectorized.py           # VectorizedSupplyChain (N,K,T) matrix engine
-└── diagnostics/
+└── diagnostics/                # Backward-compatible (v0.1.0)
     ├── metrics.py              # Bullwhip ratio, fill rate, etc.
     ├── plots.py                # 10 publication-grade plot functions
     └── network.py              # Network diagram + geographic map
 
-tests/                          # 117 unit tests, 99% coverage
+tests/                          # 219 unit tests
 notebooks/
-├── tutorial.ipynb              # Full API walkthrough
-├── 01_supply_chain_cost.ipynb  # Cost simulation & service level tradeoffs
-├── 02_bullwhip_effect.ipynb    # Bullwhip confirmation & Monte Carlo validation
-└── 03_custom_policies.ipynb    # Comparing ordering policies (OUT, fixed, smoothed)
-scripts/visualize.py            # CLI figure generation
-simulation.ipynb                # Original research notebook
+├── benchmark_policies.ipynb    # Policy comparison benchmark
+├── benchmark_forecasters.ipynb # Forecaster comparison benchmark
+├── add_your_own_model.ipynb    # Tutorial: extending the framework
+└── (experiment notebooks)
 ```
 
 ## Testing
@@ -261,7 +344,7 @@ python -m pytest tests/ -v
 python -m pytest tests/ --cov=deepbullwhip --cov-report=term-missing
 ```
 
-Current: **117 tests, 99% code coverage**.
+Current: **219 tests** across all modules.
 
 ## Tutorial
 

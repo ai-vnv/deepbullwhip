@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-04-10
+
+### Added
+
+- **Registry system** (`registry.py`): Decorator-based `@register` / `get` / `list_registered` for all component types
+- **New ordering policies**: ProportionalOUTPolicy (POUT), ConstantOrderPolicy, SmoothingOUTPolicy
+- **New demand generators**: BeerGameDemandGenerator, ARMADemandGenerator, ReplayDemandGenerator
+- **Forecaster module** (`forecast/`): Forecaster ABC with NaiveForecaster, MovingAverageForecaster, ExponentialSmoothingForecaster
+- **Metrics module** (`metrics/`): Structured BWR, CumulativeBWR, NSAmp, FillRate, TotalCost, ChenLowerBound with `@register` support
+- **Benchmark module** (`benchmark/`): BenchmarkRunner for standardized policy/forecaster comparison with LaTeX, Markdown, and CSV export
+- **Datasets module** (`datasets/`): Built-in Beer Game, WSTS semiconductor sample, synthetic AR(1)/ARMA, M5 Walmart loader
+- **Perishable cost function**: NewsvendorCost + obsolescence penalty for technology perishability
+- **Predefined chain configs**: semiconductor_4tier, beer_game, consumer_2tier
+- 3 benchmark notebooks: policy comparison, forecaster comparison, add-your-own-model tutorial
+- 102 new tests (219 total)
+
+### Changed
+
+- Version bumped to 0.2.0
+- `__init__.py` exports all new classes while maintaining full backward compatibility
+- `pyproject.toml` adds `benchmark` optional dependency group
+
+### Backward Compatibility
+
+- All v0.1.0 imports and APIs remain unchanged
+- `diagnostics.metrics` module continues to work as before
+- `simulate()` interface unchanged (forecasts_mean/std as separate arrays)
+- All 117 original tests pass without modification
+
 ## [0.1.0] - 2025-04-09
 
 ### Added
@@ -27,4 +56,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MkDocs documentation with Material theme
 - GitHub Actions CI (multi-OS, Python 3.10-3.13), Codecov, auto-docs, PyPI publish
 
+[0.2.0]: https://github.com/ai-vnv/deepbullwhip/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ai-vnv/deepbullwhip/releases/tag/v0.1.0

@@ -16,6 +16,24 @@ class EchelonConfig:
     initial_inventory: float = 50.0
 
 
+def beer_game_config() -> list[EchelonConfig]:
+    """Return the 4-echelon MIT Beer Game config."""
+    return [
+        EchelonConfig("Retailer", lead_time=2, holding_cost=0.50, backorder_cost=1.00),
+        EchelonConfig("Wholesaler", lead_time=2, holding_cost=0.50, backorder_cost=1.00),
+        EchelonConfig("Distributor", lead_time=2, holding_cost=0.50, backorder_cost=1.00),
+        EchelonConfig("Factory", lead_time=2, holding_cost=0.50, backorder_cost=1.00),
+    ]
+
+
+def consumer_2tier_config() -> list[EchelonConfig]:
+    """Return a simple 2-echelon consumer goods config."""
+    return [
+        EchelonConfig("Retailer", lead_time=1, holding_cost=0.20, backorder_cost=0.80),
+        EchelonConfig("Manufacturer", lead_time=4, holding_cost=0.10, backorder_cost=0.40),
+    ]
+
+
 def default_semiconductor_config() -> list[EchelonConfig]:
     """Return the 4-echelon semiconductor config from the paper.
 

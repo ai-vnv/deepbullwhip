@@ -2,8 +2,10 @@ import numpy as np
 from scipy import stats
 
 from deepbullwhip.policy.base import OrderingPolicy
+from deepbullwhip.registry import register
 
 
+@register("policy", "order_up_to")
 class OrderUpToPolicy(OrderingPolicy):
     """Order-Up-To (OUT / base-stock) policy.
 

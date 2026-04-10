@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 from deepbullwhip import (
-    EchelonConfig,
     OrderUpToPolicy,
     SemiconductorDemandGenerator,
     SerialSupplyChain,
@@ -71,9 +70,6 @@ class TestProportionalOUT:
         out_bwr = out_result.echelon_results[0].bullwhip_ratio
 
         # POUT chain (alpha=0.3)
-        configs = [
-            EchelonConfig("E1", lead_time=2, holding_cost=0.15, backorder_cost=0.60)
-        ]
         pout_policy = ProportionalOUTPolicy(lead_time=2, service_level=0.95, alpha=0.3)
         cost_fn = NewsvendorCost(holding_cost=0.15, backorder_cost=0.60)
         pout_echelon = SupplyChainEchelon("E1", lead_time=2, policy=pout_policy, cost_fn=cost_fn)

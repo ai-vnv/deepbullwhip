@@ -7,7 +7,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from deepbullwhip._types import SimulationResult, TimeSeries
 from deepbullwhip.benchmark.configs import PREDEFINED_CONFIGS
 from deepbullwhip.chain.config import EchelonConfig
 from deepbullwhip.chain.echelon import SupplyChainEchelon

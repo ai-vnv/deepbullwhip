@@ -36,8 +36,6 @@ def to_latex(
     latex = pivot.to_latex(float_format="%.3f")
 
     if caption or label:
-        lines = latex.split("\n")
-        # Insert caption and label after \begin{table}
         header = "\\begin{table}[htbp]\n\\centering\n"
         if caption:
             header += f"\\caption{{{caption}}}\n"

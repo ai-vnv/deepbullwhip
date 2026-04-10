@@ -1,7 +1,6 @@
 """Tests for new demand generators: BeerGame, ARMA, Replay."""
 
 import numpy as np
-import pytest
 
 from deepbullwhip.demand.arma import ARMADemandGenerator
 from deepbullwhip.demand.beer_game import BeerGameDemandGenerator

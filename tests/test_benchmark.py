@@ -3,11 +3,9 @@
 import os
 import tempfile
 
-import numpy as np
 import pandas as pd
 import pytest
 
-from deepbullwhip.benchmark.configs import PREDEFINED_CONFIGS
 from deepbullwhip.benchmark.report import to_latex, to_markdown
 from deepbullwhip.benchmark.runner import BenchmarkRunner
 from deepbullwhip.chain.config import EchelonConfig

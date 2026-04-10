@@ -1,0 +1,6 @@
+# Raw downloaded datasets (large files, download via scripts)
+raw/m5/*.csv
+raw/uci_online_retail/*.xlsx
+raw/store_item_demand/*.csv
+raw/australian_drug_sales/PBS.csv
+*.zip

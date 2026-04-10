@@ -146,6 +146,35 @@ results = runner.run(policies=["order_up_to", "my_policy"])
 
 See [`notebooks/add_your_own_model.ipynb`](notebooks/add_your_own_model.ipynb) for a full walkthrough.
 
+### Real-World Dataset Benchmarks
+
+Run benchmarks on well-known demand datasets out of the box:
+
+```python
+from deepbullwhip.datasets.loader import load_dataset
+from deepbullwhip.demand.replay import ReplayDemandGenerator
+
+# Load M5 Walmart, Australian PBS, WSTS, or Beer Game
+demand = load_dataset("m5", store="CA_1", dept="FOODS_1", freq="weekly")
+
+runner = BenchmarkRunner(
+    chain_config="consumer_2tier",
+    demand=ReplayDemandGenerator(data=demand),
+    T=200, N=10, seed=42,
+)
+results = runner.run(policies=["order_up_to", ("proportional_out", {"alpha": 0.3})])
+```
+
+| Dataset | Source | Frequency | Periods |
+|---------|--------|-----------|---------|
+| M5 Walmart | Kaggle M5 Competition | Weekly | 277 |
+| Australian PBS | tidyverts/tsibbledata | Monthly | 197 |
+| WSTS Semiconductor | Bundled sample | Monthly | 60 |
+| Beer Game | Built-in | Weekly | 52 |
+
+Download scripts for each dataset are in `data/raw/*/download.sh`.
+See [`notebooks/benchmark_real_datasets.ipynb`](notebooks/benchmark_real_datasets.ipynb) for a full cross-dataset comparison.
+
 ## Default Supply Chain Configuration
 
 | Echelon | Role | Lead Time | h (holding) | b (backorder) |

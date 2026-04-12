@@ -96,6 +96,8 @@ omit = [
     "deepbullwhip/datasets/m5.py",
     "deepbullwhip/optimize/inventory.py",
     "deepbullwhip/optimize/network_design.py",
+    "deepbullwhip/diagnostics/graphviz_viz.py",
+    "deepbullwhip/render/_graphviz.py",
 ]
 
 [tool.coverage.report]

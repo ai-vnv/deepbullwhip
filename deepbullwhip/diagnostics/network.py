@@ -39,7 +39,12 @@ class NodeLocation:
 
 @dataclass
 class SupplyChainNetwork:
-    """Describes the topology and geography of a supply chain."""
+    """Describes the topology and geography of a supply chain.
+
+    This is the matplotlib-based visualization data model. For
+    Graphviz-based rendering, see
+    :mod:`deepbullwhip.diagnostics.graphviz_viz`.
+    """
 
     nodes: list[NodeLocation]
     edges: list[tuple[int, int]] = field(default_factory=list)
@@ -48,6 +53,53 @@ class SupplyChainNetwork:
         if not self.edges and len(self.nodes) > 1:
             # Default: serial chain E_K -> ... -> E_1
             self.edges = [(i + 1, i) for i in range(len(self.nodes) - 1)]
+
+    @classmethod
+    def from_graph(
+        cls,
+        graph: "SupplyChainGraph",
+        locations: dict[str, tuple[float, float]] | None = None,
+    ) -> SupplyChainNetwork:
+        """Create a visualization network from a :class:`SupplyChainGraph`.
+
+        Parameters
+        ----------
+        graph : SupplyChainGraph
+            The supply chain graph to convert.
+        locations : dict[str, tuple[float, float]] or None
+            Optional mapping from node name to ``(lat, lon)``
+            coordinates. Nodes without coordinates are placed at
+            ``(0, 0)``.
+
+        Returns
+        -------
+        SupplyChainNetwork
+        """
+        from deepbullwhip.chain.graph import SupplyChainGraph  # noqa: F811
+
+        node_names = list(graph.nodes.keys())
+        name_to_idx = {name: i for i, name in enumerate(node_names)}
+
+        nodes = []
+        for name, cfg in graph.nodes.items():
+            lat, lon = (0.0, 0.0)
+            if locations and name in locations:
+                lat, lon = locations[name]
+            nodes.append(
+                NodeLocation(
+                    name=name,
+                    lat=lat,
+                    lon=lon,
+                    role=cfg.name,
+                )
+            )
+
+        edges = [
+            (name_to_idx[u], name_to_idx[v])
+            for u, v in graph.edges
+        ]
+
+        return cls(nodes=nodes, edges=edges)
 
 
 def kfupm_petrochemical_network() -> SupplyChainNetwork:

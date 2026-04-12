@@ -1,4 +1,24 @@
-"""DeepBullwhip: Multi-tier supply chain bullwhip effect simulator."""
+"""DeepBullwhip: Multi-tier supply chain bullwhip effect simulator.
+
+A modular, extensible framework for simulating serial and network
+supply chains and analyzing the bullwhip effect through various
+demand patterns, ordering policies, and cost functions.
+
+v0.3.0 adds:
+
+- **Network topologies**: :class:`SupplyChainGraph` and :class:`EdgeConfig`
+  for arbitrary DAG supply chains (trees, convergent/divergent networks).
+- **NetworkX integration**: bidirectional graph conversion and analysis
+  (requires ``pip install deepbullwhip[network]``).
+- **Graphviz visualization**: publication-quality network rendering
+  (requires ``pip install deepbullwhip[viz]``).
+- **Pyomo optimization**: inventory optimization, policy tuning,
+  and network design (requires ``pip install deepbullwhip[optimize]``).
+
+Install all optional dependencies with::
+
+    pip install deepbullwhip[all]
+"""
 
 # Core (v0.1.0 — backward compatible)
 from deepbullwhip.chain.config import EchelonConfig, default_semiconductor_config
@@ -34,7 +54,34 @@ from deepbullwhip.forecast.naive import NaiveForecaster
 # Benchmark (v0.2.0)
 from deepbullwhip.benchmark.runner import BenchmarkRunner
 
-__version__ = "0.2.0"
+# Network topologies (v0.3.0 — always available, no extra deps)
+from deepbullwhip.chain.graph import EdgeConfig, SupplyChainGraph, from_serial
+from deepbullwhip.chain.network_sim import NetworkSupplyChain
+from deepbullwhip._types import NetworkSimulationResult
+
+# NetworkX integration (v0.3.0 — functions use lazy imports internally)
+from deepbullwhip.network.convert import from_networkx, serial_to_networkx, to_networkx
+
+# Graphviz visualization (v0.3.0 — functions use lazy imports internally)
+from deepbullwhip.diagnostics.graphviz_viz import (
+    render_network,
+    render_simulation_snapshot,
+    save_figure,
+)
+
+# Schema serialization (v0.3.0)
+from deepbullwhip.schema.io import (
+    from_json,
+    load_json,
+    save_json,
+    to_json,
+)
+
+# Multi-backend renderer (v0.3.0)
+from deepbullwhip.render.api import render_from_json, render_graph
+from deepbullwhip.render.theme import Theme, get_theme, list_themes, register_theme
+
+__version__ = "0.3.0"
 
 __all__ = [
     # Core (v0.1.0)
@@ -69,4 +116,30 @@ __all__ = [
     "ExponentialSmoothingForecaster",
     # Benchmark (v0.2.0)
     "BenchmarkRunner",
+    # Network topologies (v0.3.0)
+    "SupplyChainGraph",
+    "EdgeConfig",
+    "from_serial",
+    "NetworkSupplyChain",
+    "NetworkSimulationResult",
+    # NetworkX integration (v0.3.0)
+    "to_networkx",
+    "from_networkx",
+    "serial_to_networkx",
+    # Graphviz visualization (v0.3.0)
+    "render_network",
+    "render_simulation_snapshot",
+    "save_figure",
+    # Schema serialization (v0.3.0)
+    "to_json",
+    "from_json",
+    "save_json",
+    "load_json",
+    # Multi-backend renderer (v0.3.0)
+    "render_graph",
+    "render_from_json",
+    "Theme",
+    "get_theme",
+    "list_themes",
+    "register_theme",
 ]

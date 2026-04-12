@@ -10,6 +10,8 @@ _REGISTRY: dict[str, dict[str, type]] = {
     "cost": {},
     "forecaster": {},
     "metric": {},
+    "optimizer": {},
+    "topology": {},
 }
 
 
@@ -25,7 +27,8 @@ def register(category: str, name: str):
     Parameters
     ----------
     category : str
-        One of "demand", "policy", "cost", "forecaster", "metric".
+        One of ``"demand"``, ``"policy"``, ``"cost"``, ``"forecaster"``,
+        ``"metric"``, ``"optimizer"``, ``"topology"``.
     name : str
         Unique name within the category.
     """

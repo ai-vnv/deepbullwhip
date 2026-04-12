@@ -5,7 +5,7 @@
 [![Docs](https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747)](https://ai-vnv.github.io/deepbullwhip)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/ai-vnv/deepbullwhip)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.2.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
+[![Version](https://img.shields.io/badge/version-0.3.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
 
 **Multi-tier supply chain bullwhip effect simulator with modular demand models, ordering policies, and cost functions.**
 
@@ -24,10 +24,13 @@ DeepBullwhip provides a configurable simulation framework for studying the
 supply chains. It is designed for researchers and practitioners who need to:
 
 - Simulate multi-echelon supply chains under different demand patterns
+- Model arbitrary DAG supply chain topologies (serial, tree, convergent/divergent)
 - Compare ordering policies (Order-Up-To, custom policies) and cost structures
 - Quantify bullwhip amplification, fill rates, and total supply chain costs
-- Generate publication-grade diagnostic visualizations
+- Optimize inventory levels and policy parameters using mathematical programming
+- Generate publication-grade diagnostic visualizations (matplotlib + Graphviz)
 - Run Monte Carlo experiments to study forecast-accuracy vs. robustness tradeoffs
+- Integrate with the Python ecosystem: NetworkX, Graphviz, Pyomo
 
 The package is extracted from a computational study on the accuracy–robustness
 tradeoff in ML-driven semiconductor supply chains (see `simulation.ipynb`).
@@ -44,6 +47,10 @@ tradeoff in ML-driven semiconductor supply chains (see `simulation.ipynb`).
 | **Datasets** | Built-in datasets: Beer Game, WSTS semiconductor, synthetic AR(1)/ARMA, M5 Walmart |
 | **Registry** | Decorator-based `@register` system for easy extensibility and model discovery |
 | **Supply chain** | `SerialSupplyChain` supporting arbitrary K-echelon serial topologies via `EchelonConfig` |
+| **Network topologies** | `SupplyChainGraph` + `NetworkSupplyChain` for arbitrary DAG supply chains (trees, convergent/divergent) |
+| **NetworkX integration** | Bidirectional graph conversion, critical path analysis, centrality, topological ordering |
+| **Graphviz visualization** | Publication-quality SVG/PDF network rendering with metrics overlay |
+| **Pyomo optimization** | Inventory optimization, policy parameter tuning, network design (MIP) |
 | **Diagnostics** | 10 publication-grade plot functions + network diagram + geographic map visualization |
 | **Metrics** | BWR, NSAmp, Fill Rate, Total Cost, Chen lower bound (standalone module + backward-compat diagnostics) |
 | **Vectorized engine** | `VectorizedSupplyChain` — matrix-based `(N, K, T)` simulation for Monte Carlo batching. **~100x speedup** over serial for N=1000 paths |
@@ -65,8 +72,12 @@ pip install -e ".[dev]"
 
 - **Core:** numpy, scipy, pandas, matplotlib
 - **Dev:** pytest, pytest-cov
+- **Optional (Network):** networkx (`pip install deepbullwhip[network]`)
+- **Optional (Viz):** graphviz (`pip install deepbullwhip[viz]`)
+- **Optional (Optimize):** pyomo (`pip install deepbullwhip[optimize]`)
 - **Optional (ML):** scikit-learn, torch
 - **Optional (Benchmark):** kaggle, tabulate
+- **All optional:** `pip install deepbullwhip[all]`
 
 ## Quick Start
 
@@ -144,7 +155,7 @@ class MyPolicy(OrderingPolicy):
 results = runner.run(policies=["order_up_to", "my_policy"])
 ```
 
-See [`notebooks/add_your_own_model.ipynb`](notebooks/add_your_own_model.ipynb) for a full walkthrough.
+See [Notebook 03: Custom Policies](notebooks/03_custom_policies.ipynb) for a full walkthrough.
 
 ### Real-World Dataset Benchmarks
 
@@ -173,7 +184,175 @@ results = runner.run(policies=["order_up_to", ("proportional_out", {"alpha": 0.3
 | Beer Game | Built-in | Weekly | 52 |
 
 Download scripts for each dataset are in `data/raw/*/download.sh`.
-See [`notebooks/benchmark_real_datasets.ipynb`](notebooks/benchmark_real_datasets.ipynb) for a full cross-dataset comparison.
+See [`notebooks/08_benchmark_real_datasets.ipynb`](notebooks/08_benchmark_real_datasets.ipynb) for a cross-dataset comparison.
+
+## Network Topologies (v0.3.0)
+
+Model arbitrary DAG supply chains beyond serial chains:
+
+```python
+from deepbullwhip import SupplyChainGraph, EdgeConfig, NetworkSupplyChain, EchelonConfig
+import numpy as np
+
+# Define a distribution tree: Factory -> Warehouse -> {Retail_A, Retail_B}
+graph = SupplyChainGraph(
+    nodes={
+        "Factory": EchelonConfig("Factory", lead_time=4, holding_cost=0.10, backorder_cost=0.40),
+        "Warehouse": EchelonConfig("Warehouse", lead_time=2, holding_cost=0.15, backorder_cost=0.50),
+        "Retail_A": EchelonConfig("Retail_A", lead_time=1, holding_cost=0.20, backorder_cost=0.60),
+        "Retail_B": EchelonConfig("Retail_B", lead_time=1, holding_cost=0.20, backorder_cost=0.60),
+    },
+    edges={
+        ("Factory", "Warehouse"): EdgeConfig(lead_time=3),
+        ("Warehouse", "Retail_A"): EdgeConfig(lead_time=1),
+        ("Warehouse", "Retail_B"): EdgeConfig(lead_time=1),
+    },
+)
+
+# Simulate
+chain = NetworkSupplyChain(graph)
+T = 52
+result = chain.simulate(
+    demand={"Retail_A": np.full(T, 5.0), "Retail_B": np.full(T, 3.0)},
+    forecasts_mean={"Retail_A": np.full(T, 5.0), "Retail_B": np.full(T, 3.0)},
+    forecasts_std={"Retail_A": np.full(T, 1.0), "Retail_B": np.full(T, 1.0)},
+)
+
+for name, er in result.node_results.items():
+    print(f"{name:12s}  BW={er.bullwhip_ratio:.2f}  FR={er.fill_rate:.0%}")
+```
+
+### NetworkX Integration
+
+```python
+from deepbullwhip import to_networkx, from_networkx
+from deepbullwhip.network import find_critical_path, echelon_centrality
+
+# Convert to NetworkX for graph analysis
+G = to_networkx(graph)
+print("Critical path:", find_critical_path(G))
+print("Centrality:", echelon_centrality(G))
+
+# Build from NetworkX
+import networkx as nx
+G = nx.DiGraph()
+G.add_node("Supplier", lead_time=4, holding_cost=0.1, backorder_cost=0.4)
+G.add_node("Store", lead_time=1, holding_cost=0.2, backorder_cost=0.6)
+G.add_edge("Supplier", "Store", lead_time=2)
+chain = NetworkSupplyChain.from_networkx(G)
+```
+
+### Graphviz Visualization
+
+```python
+from deepbullwhip import render_network, save_figure
+
+# Render network diagram (with optional simulation overlay)
+source = render_network(graph, sim_result=result, engine="dot", title="Distribution Tree")
+save_figure(source, "network.pdf")
+```
+
+### Pyomo Optimization
+
+```python
+from deepbullwhip.optimize import tune_service_levels, tune_smoothing_factors
+
+# Find optimal service levels via simulation-optimization
+scenarios = np.random.default_rng(42).normal(10, 2, (50, 52))
+scenarios = np.maximum(scenarios, 0)
+
+result = tune_service_levels(graph, scenarios, objective="total_cost")
+print("Optimal service levels:", result.parameters)
+print("Expected cost:", result.objective_value)
+
+# Find optimal smoothing factors
+result = tune_smoothing_factors(graph, scenarios)
+print("Optimal alpha_s:", result.parameters)
+```
+
+## Standardized Schema + Multi-Backend Rendering (v0.3.0)
+
+Define supply chains in a standard JSON format and render identically across matplotlib, Graphviz, and TikZ:
+
+### JSON Schema
+
+```json
+{
+  "version": "1.0",
+  "metadata": {"name": "Consumer 2-Tier", "tags": ["serial", "2-echelon"]},
+  "nodes": [
+    {"id": "Manufacturer", "config": {"lead_time": 4, "holding_cost": 0.10, "backorder_cost": 0.40},
+     "layout": {"tier": 0, "role": "manufacturer"}},
+    {"id": "Retailer", "config": {"lead_time": 1, "holding_cost": 0.20, "backorder_cost": 0.80},
+     "layout": {"tier": 1, "role": "retailer"}}
+  ],
+  "edges": [{"source": "Manufacturer", "target": "Retailer", "config": {"lead_time": 3}}]
+}
+```
+
+### Multi-Backend Rendering
+
+```python
+from deepbullwhip import render_graph, from_serial, to_json, save_json, load_json
+from deepbullwhip.chain.config import beer_game_config
+
+graph = from_serial(beer_game_config())
+
+# Save to standard JSON
+save_json(graph, "beer_game.json", metadata={"name": "Beer Game"})
+
+# Render with matplotlib (default) — 4 built-in themes
+fig = render_graph(graph, theme="kfupm")            # KFUPM green/gold (default)
+fig = render_graph(graph, theme="ieee")              # IEEE grayscale, 3.5" width
+fig = render_graph(graph, theme="presentation")      # Large fonts for slides
+fig = render_graph(graph, theme="minimal")           # Clean black & white
+
+# Render as TikZ for LaTeX papers
+tex = render_graph(graph, backend="tikz", theme="ieee", title="Beer Game")
+with open("beer_game.tex", "w") as f:
+    f.write(tex)
+
+# Render with Graphviz (requires pip install deepbullwhip[viz])
+source = render_graph(graph, backend="graphviz", engine="dot")
+
+# One-liner: load JSON and render
+fig = render_from_json("beer_game.json", theme="kfupm")
+```
+
+### Supply Chain Examples (Different Tier Counts)
+
+**2-Tier (Manufacturer → Retailer):**
+```python
+from deepbullwhip.chain.config import consumer_2tier_config
+fig = render_graph(from_serial(consumer_2tier_config()), theme="minimal")
+```
+
+**4-Tier Beer Game (Factory → Distributor → Wholesaler → Retailer):**
+```python
+from deepbullwhip.chain.config import beer_game_config
+fig = render_graph(from_serial(beer_game_config()), theme="kfupm", title="MIT Beer Game")
+```
+
+**Distribution Tree (Factory → Warehouse → {Store A, Store B}):**
+```python
+from deepbullwhip import SupplyChainGraph, EdgeConfig, EchelonConfig, render_graph
+
+tree = SupplyChainGraph(
+    nodes={
+        "Factory": EchelonConfig("Factory", 4, 0.10, 0.40),
+        "Warehouse": EchelonConfig("Warehouse", 2, 0.15, 0.50),
+        "Store_A": EchelonConfig("Store_A", 1, 0.20, 0.60),
+        "Store_B": EchelonConfig("Store_B", 1, 0.20, 0.60),
+    },
+    edges={
+        ("Factory", "Warehouse"): EdgeConfig(lead_time=3),
+        ("Warehouse", "Store_A"): EdgeConfig(lead_time=1),
+        ("Warehouse", "Store_B"): EdgeConfig(lead_time=1),
+    },
+)
+fig = render_graph(tree, theme="presentation", title="Distribution Network")
+tex = render_graph(tree, backend="tikz", theme="ieee")  # For LaTeX papers
+```
 
 ## Default Supply Chain Configuration
 
@@ -349,18 +528,43 @@ deepbullwhip/
 │   ├── config.py               # EchelonConfig + defaults
 │   ├── echelon.py              # SupplyChainEchelon
 │   ├── serial.py               # SerialSupplyChain
-│   └── vectorized.py           # VectorizedSupplyChain (N,K,T) matrix engine
-└── diagnostics/                # Backward-compatible (v0.1.0)
+│   ├── vectorized.py           # VectorizedSupplyChain (N,K,T) matrix engine
+│   ├── graph.py                # SupplyChainGraph, EdgeConfig (v0.3.0)
+│   └── network_sim.py          # NetworkSupplyChain (v0.3.0)
+├── network/                    # NetworkX integration (v0.3.0)
+│   ├── convert.py              # to_networkx, from_networkx
+│   └── analysis.py             # critical path, centrality, etc.
+├── optimize/                   # Pyomo optimization (v0.3.0)
+│   ├── inventory.py            # Multi-echelon inventory optimization
+│   ├── policy_tuning.py        # Service level / smoothing tuning
+│   └── network_design.py       # Facility location MIP (experimental)
+└── diagnostics/
     ├── metrics.py              # Bullwhip ratio, fill rate, etc.
     ├── plots.py                # 10 publication-grade plot functions
-    └── network.py              # Network diagram + geographic map
+    ├── network.py              # Network diagram + geographic map
+    └── graphviz_viz.py         # Graphviz rendering (v0.3.0)
 
-tests/                          # 219 unit tests
-notebooks/
-├── benchmark_policies.ipynb    # Policy comparison benchmark
-├── benchmark_forecasters.ipynb # Forecaster comparison benchmark
-├── add_your_own_model.ipynb    # Tutorial: extending the framework
-└── (experiment notebooks)
+├── schema/                     # JSON schema (v0.3.0)
+│   ├── definition.py           # NodeLayoutHint, LayoutDefaults, NetworkMetadata
+│   └── io.py                   # to_json, from_json, save/load
+├── render/                     # Multi-backend renderer (v0.3.0)
+│   ├── theme.py                # 4 built-in themes + registry
+│   ├── layout.py               # Auto-layout from topology
+│   ├── _matplotlib.py          # Matplotlib backend
+│   ├── _graphviz.py            # Graphviz backend
+│   ├── _tikz.py                # TikZ/LaTeX backend
+│   └── api.py                  # Unified render_graph() entry point
+
+tests/                          # 385 unit tests, 98%+ coverage
+notebooks/                      # All notebooks run on Google Colab
+├── 01_supply_chain_cost.ipynb      # Costs, inventory, service level tradeoffs
+├── 02_bullwhip_effect.ipynb        # Bullwhip amplification & Monte Carlo
+├── 03_custom_policies.ipynb        # Custom policies, smoothing, @register
+├── 04_network_viz_tutorial.ipynb   # DAG topologies, JSON schema, themes, NetworkX
+├── 05_pyomo_optimization.ipynb     # Policy tuning, inventory opt, network design
+├── 06_benchmark_policies.ipynb      # Systematic policy comparison
+├── 07_benchmark_forecasters.ipynb   # Forecaster comparison
+└── 08_benchmark_real_datasets.ipynb # M5, WSTS, Beer Game benchmarks
 ```
 
 ## Testing
@@ -373,13 +577,19 @@ python -m pytest tests/ -v
 python -m pytest tests/ --cov=deepbullwhip --cov-report=term-missing
 ```
 
-Current: **219 tests** across all modules.
+Current: **385 tests** across all modules, **98%+ coverage**.
 
-## Tutorial
+## Tutorials
 
-See [`notebooks/tutorial.ipynb`](notebooks/tutorial.ipynb) for a step-by-step
-guide covering demand generation, chain configuration, simulation, visualization,
-and custom policy implementation.
+All notebooks include Google Colab setup cells and run standalone.
+
+| Notebook | Topic |
+|----------|-------|
+| [01 Supply Chain Cost](notebooks/01_supply_chain_cost.ipynb) | Newsvendor costs, holding vs backorder, service level tradeoffs |
+| [02 Bullwhip Effect](notebooks/02_bullwhip_effect.ipynb) | Bullwhip amplification, Monte Carlo validation, Chen lower bound |
+| [03 Custom Policies](notebooks/03_custom_policies.ipynb) | Implementing & registering custom ordering policies |
+| [04 Network & Viz](notebooks/04_network_viz_tutorial.ipynb) | DAG topologies, JSON schema, NetworkX integration, multi-backend rendering |
+| [05 Pyomo Optimization](notebooks/05_pyomo_optimization.ipynb) | Service level tuning, inventory optimization, network design |
 
 ## Citation
 

@@ -25,7 +25,7 @@ class TestBuiltInThemes:
         theme = get_theme("ieee")
         assert theme.name == "ieee"
         assert theme.figure.width == 3.5
-        assert theme.font.node_label_size == 6.5
+        assert theme.font.node_label_size == 7.0
 
     def test_presentation_exists(self):
         theme = get_theme("presentation")
@@ -36,7 +36,7 @@ class TestBuiltInThemes:
     def test_minimal_exists(self):
         theme = get_theme("minimal")
         assert theme.name == "minimal"
-        assert theme.node.fill_alpha == 0.80
+        assert theme.node.fill_alpha == 0.90
 
     def test_all_themes_listed(self):
         themes = list_themes()
@@ -59,7 +59,7 @@ class TestThemeOverride:
         theme = get_theme("ieee")
         wide = theme.override(figure=FigureStyle(width=10.0))
         assert wide.figure.width == 10.0
-        assert wide.font.node_label_size == 6.5  # unchanged
+        assert wide.font.node_label_size == 7.0  # unchanged
 
     def test_override_preserves_immutability(self):
         theme = get_theme("kfupm")
@@ -110,7 +110,7 @@ class TestThemeRegistry:
 class TestStyleDataclasses:
     def test_node_style_defaults(self):
         style = NodeStyle()
-        assert style.shape == "rounded_rect"
+        assert style.shape == "circle"
         assert style.fill_alpha == 0.90
 
     def test_edge_style_defaults(self):

@@ -1,12 +1,8 @@
 """Matplotlib backend for supply chain network rendering.
 
-Produces publication-quality diagrams with solid colored rounded-rect
-nodes, white bold labels, and clean directed edges with lead-time
-labels. Inspired by D3Trees.jl and Bayesian network conventions.
-
-Nodes show the echelon **name** by default. When ``sim_result`` is
-provided, nodes are color-coded by bullwhip severity and display
-BW/FR metrics.
+Produces publication-quality network diagrams with solid colored
+circle nodes, white bold labels, and directed edges with numeric
+labels placed directly on the edge lines.
 """
 
 from __future__ import annotations
@@ -43,22 +39,12 @@ def _build_result_map(
     return result_map
 
 
-def _node_box_size(
-    name: str,
-    theme: Theme,
-    has_metrics: bool,
-) -> tuple[float, float]:
-    """Compute node rectangle size to fit text content."""
-    char_w = theme.font.node_label_size * 0.011
-    w = max(theme.node.min_width, len(name) * char_w + 0.35)
-    if has_metrics:
-        # Metrics line may be wider
-        metrics_len = 20  # "BW=1.23 | FR=95%"
-        w = max(w, metrics_len * char_w * 0.85 + 0.3)
-    h = theme.node.min_height
-    if has_metrics:
-        h += 0.2
-    return w, h
+def _auto_fontsize(name: str, radius: float) -> float:
+    """Pick font size so text fits inside the circle."""
+    max_width = radius * 1.4  # usable text width inside circle
+    char_width = 0.085  # approximate character width at size 10
+    ideal = max_width / (len(name) * char_width) * 10
+    return min(10.0, max(5.5, ideal))
 
 
 def render_matplotlib(
@@ -71,9 +57,9 @@ def render_matplotlib(
 ) -> matplotlib.figure.Figure:
     """Render a supply chain network using matplotlib.
 
-    Without ``sim_result``: clean diagram with node names and edge
-    lead times. With ``sim_result``: nodes color-coded by bullwhip
-    severity (green/gold/red) with BW and fill rate metrics.
+    Draws solid colored circle nodes with white bold labels and
+    directed edges with numeric lead-time labels placed directly
+    on the edge lines.
 
     Parameters
     ----------
@@ -84,8 +70,8 @@ def render_matplotlib(
     theme : Theme
         Visual theme controlling all styling.
     sim_result : SimulationResult or NetworkSimulationResult or None
-        Optional simulation results. Adds BW/FR metrics to nodes and
-        color-codes them by bullwhip severity.
+        Optional simulation results. Adds BW/FR annotation below
+        each node and color-codes by bullwhip severity.
     title : str or None
         Figure title.
     annotations : dict[str, dict[str, str]] or None
@@ -107,17 +93,14 @@ def render_matplotlib(
     if not positions:
         return fig
 
-    # Pre-compute node sizes
-    node_sizes: dict[str, tuple[float, float]] = {}
-    for name in graph.nodes:
-        has_metrics = name in result_map
-        node_sizes[name] = _node_box_size(name, theme, has_metrics)
+    # Node radius
+    R = theme.node.min_width / 2.0
 
     xs = [p[0] for p in positions.values()]
     ys = [p[1] for p in positions.values()]
-    margin = theme.figure.margin * 2
-    ax.set_xlim(min(xs) - margin, max(xs) + margin)
-    ax.set_ylim(min(ys) - margin, max(ys) + margin)
+    pad = R + 0.6
+    ax.set_xlim(min(xs) - pad, max(xs) + pad)
+    ax.set_ylim(min(ys) - pad, max(ys) + pad)
 
     # --- Draw edges ---
     for (upstream, downstream), edge_cfg in graph.edges.items():
@@ -132,45 +115,41 @@ def render_matplotlib(
             continue
 
         ux, uy = dx / dist, dy / dist
-        w0, h0 = node_sizes[upstream]
-        w1, h1 = node_sizes[downstream]
-        clip0 = np.sqrt((w0 / 2) ** 2 + (h0 / 2) ** 2) * 0.72
-        clip1 = np.sqrt((w1 / 2) ** 2 + (h1 / 2) ** 2) * 0.72
-        sx, sy = x0 + ux * clip0, y0 + uy * clip0
-        ex, ey = x1 - ux * clip1, y1 - uy * clip1
+        sx, sy = x0 + ux * (R + 0.05), y0 + uy * (R + 0.05)
+        ex, ey = x1 - ux * (R + 0.05), y1 - uy * (R + 0.05)
 
         ax.annotate(
             "",
             xy=(ex, ey),
             xytext=(sx, sy),
             arrowprops=dict(
-                arrowstyle="-|>",
+                arrowstyle="->",
                 color=theme.edge.color,
                 lw=theme.edge.line_width,
                 shrinkA=0,
                 shrinkB=0,
-                mutation_scale=8,
+                mutation_scale=10,
             ),
             zorder=2,
         )
 
-        # Edge label -- offset perpendicular (or above for horizontal)
+        # Label ON the edge (midpoint with white background)
         mx, my = (sx + ex) / 2, (sy + ey) / 2
-        offset = 0.2
-        if abs(uy) < 0.3:
-            # Nearly horizontal: push label above
-            px, py = 0, offset
-        else:
-            px, py = -uy * offset, ux * offset
         ax.text(
-            mx + px,
-            my + py,
-            f"LT={edge_cfg.lead_time}",
+            mx,
+            my,
+            str(edge_cfg.lead_time),
             ha="center",
             va="center",
-            fontsize=theme.font.edge_label_size,
+            fontsize=theme.font.edge_label_size + 1,
+            fontweight="bold",
             fontfamily=theme.font.family,
-            color="#666666",
+            color=theme.edge.color,
+            bbox=dict(
+                boxstyle="round,pad=0.12",
+                fc=theme.figure.background,
+                ec="none",
+            ),
             zorder=3,
         )
 
@@ -182,77 +161,63 @@ def render_matplotlib(
             continue
 
         x, y = positions[name]
-        w, h = node_sizes[name]
-        has_metrics = name in result_map
 
-        # Color: BW-severity when sim_result, else theme palette
-        if has_metrics:
+        # Color
+        if name in result_map:
             color = theme.bw_color(result_map[name].bullwhip_ratio)
         else:
             color = theme.node_color(i)
 
-        # Rounded rectangle
-        rect = mpatches.FancyBboxPatch(
-            (x - w / 2, y - h / 2),
-            w,
-            h,
-            boxstyle=f"round,pad={theme.node.corner_radius}",
+        # Circle
+        circle = mpatches.Circle(
+            (x, y),
+            R,
             facecolor=color,
-            edgecolor="white",
-            linewidth=theme.node.border_width * 1.5,
+            edgecolor=color,
+            linewidth=0.5,
             zorder=5,
         )
-        ax.add_patch(rect)
+        ax.add_patch(circle)
 
-        # --- Text inside node ---
-        if has_metrics:
-            # Two lines: name + metrics
+        # Node name (white bold, auto-sized)
+        fs = _auto_fontsize(name, R)
+        ax.text(
+            x,
+            y,
+            name,
+            ha="center",
+            va="center",
+            fontsize=fs,
+            fontweight="bold",
+            fontfamily=theme.font.family,
+            color="white",
+            zorder=6,
+        )
+
+        # Metrics below node (if sim_result)
+        if name in result_map:
             er = result_map[name]
             ax.text(
                 x,
-                y + 0.1,
-                name,
+                y - R - 0.15,
+                f"BW={er.bullwhip_ratio:.2f}  FR={er.fill_rate:.0%}",
                 ha="center",
-                va="center",
-                fontsize=theme.font.node_label_size,
-                fontweight="bold",
-                fontfamily=theme.font.family,
-                color="white",
-                zorder=6,
-            )
-            ax.text(
-                x,
-                y - 0.12,
-                f"BW={er.bullwhip_ratio:.2f} | FR={er.fill_rate:.0%}",
-                ha="center",
-                va="center",
+                va="top",
                 fontsize=theme.font.node_detail_size,
-                fontweight="bold",
                 fontfamily=theme.font.family,
-                color=(1, 1, 1, 0.9),
-                zorder=6,
-            )
-        else:
-            # Single line: name only
-            ax.text(
-                x,
-                y,
-                name,
-                ha="center",
-                va="center",
-                fontsize=theme.font.node_label_size,
-                fontweight="bold",
-                fontfamily=theme.font.family,
-                color="white",
+                color="#666666",
                 zorder=6,
             )
 
-        # Extra annotations (outside, below node)
+        # Extra annotations below
         if annotations and name in annotations:
+            ann_y = y - R - 0.15
+            if name in result_map:
+                ann_y -= 0.25
             parts = [f"{k}={v}" for k, v in annotations[name].items()]
             ax.text(
                 x,
-                y - h / 2 - 0.12,
+                ann_y,
                 "  ".join(parts),
                 ha="center",
                 va="top",

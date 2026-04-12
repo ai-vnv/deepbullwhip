@@ -61,12 +61,12 @@ class NodeStyle:
         Corner radius for rounded shapes.
     """
 
-    shape: str = "rounded_rect"
+    shape: str = "circle"
     fill_alpha: float = 0.90
     border_width: float = 1.0
-    min_width: float = 0.85
-    min_height: float = 0.45
-    corner_radius: float = 0.06
+    min_width: float = 1.3
+    min_height: float = 1.3
+    corner_radius: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -313,34 +313,34 @@ def list_themes() -> list[str]:
 
 KFUPM_THEME = Theme(
     name="kfupm",
-    colors=["#006747", "#C4972F", "#2E8B8B", "#8B4513", "#4169E1", "#8B008B"],
+    colors=["#006747", "#006747", "#006747", "#006747", "#006747", "#006747"],
     bw_colors={"low": "#2E8B57", "medium": "#DAA520", "high": "#CD5C5C"},
-    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=1.0, min_width=1.1),
+    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=0.5, min_width=1.3),
     edge=EdgeStyle(color="#333333", line_width=1.0),
-    font=FontStyle(family="sans-serif", node_label_size=8.0, node_detail_size=6.0,
-                   edge_label_size=7.5),
+    font=FontStyle(family="sans-serif", node_label_size=9.0, node_detail_size=6.5,
+                   edge_label_size=8.0),
     figure=FigureStyle(width=7.0, dpi=300),
 )
 
 IEEE_THEME = Theme(
     name="ieee",
-    colors=["#333333", "#666666", "#999999", "#BBBBBB", "#444444", "#777777"],
+    colors=["#444444", "#444444", "#444444", "#444444", "#444444", "#444444"],
     bw_colors={"low": "#555555", "medium": "#888888", "high": "#333333"},
-    node=NodeStyle(shape="circle", fill_alpha=0.85, border_width=0.8, min_width=0.9),
+    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=0.5, min_width=1.0),
     edge=EdgeStyle(color="#444444", line_width=0.8),
     font=FontStyle(
-        family="serif", node_label_size=6.5, node_detail_size=5.0,
-        edge_label_size=6.0, title_size=9.0,
+        family="serif", node_label_size=7.0, node_detail_size=5.5,
+        edge_label_size=6.5, title_size=9.0,
     ),
     figure=FigureStyle(width=3.5, dpi=300),
 )
 
 PRESENTATION_THEME = Theme(
     name="presentation",
-    colors=["#006747", "#C4972F", "#2E8B8B", "#8B4513", "#4169E1", "#8B008B"],
+    colors=["#B5282C", "#B5282C", "#B5282C", "#B5282C", "#B5282C", "#B5282C"],
     bw_colors={"low": "#2E8B57", "medium": "#DAA520", "high": "#CD5C5C"},
-    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=1.5, min_width=1.5),
-    edge=EdgeStyle(color="#555555", line_width=1.5),
+    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=0.5, min_width=1.6),
+    edge=EdgeStyle(color="#333333", line_width=1.2),
     font=FontStyle(
         family="sans-serif", node_label_size=11.0, node_detail_size=8.0,
         edge_label_size=9.0, title_size=16.0,
@@ -350,11 +350,11 @@ PRESENTATION_THEME = Theme(
 
 MINIMAL_THEME = Theme(
     name="minimal",
-    colors=["#555555", "#777777", "#999999", "#BBBBBB", "#444444", "#666666"],
+    colors=["#666666", "#666666", "#666666", "#666666", "#666666", "#666666"],
     bw_colors={"low": "#888888", "medium": "#555555", "high": "#222222"},
-    node=NodeStyle(shape="circle", fill_alpha=0.80, border_width=0.8, min_width=1.0),
+    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=0.5, min_width=1.2),
     edge=EdgeStyle(color="#444444", line_width=0.8, arrow_style="->"),
-    font=FontStyle(family="sans-serif", node_label_size=7.5, node_detail_size=5.5),
+    font=FontStyle(family="sans-serif", node_label_size=8.0, node_detail_size=6.0),
     figure=FigureStyle(width=7.0, dpi=300),
 )
 

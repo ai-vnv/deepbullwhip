@@ -191,14 +191,14 @@ class TestTikzBackend:
 
 class TestGraphvizBackend:
     def test_basic_render(self, beer_game_graph):
-        graphviz = pytest.importorskip("graphviz")
+        pytest.importorskip("graphviz")
 
         source = render_graph(beer_game_graph, backend="graphviz", theme="kfupm")
         assert source is not None
         assert "digraph" in source.source
 
     def test_all_themes(self, consumer_graph):
-        graphviz = pytest.importorskip("graphviz")
+        pytest.importorskip("graphviz")
 
         for theme_name in ["kfupm", "ieee", "presentation", "minimal"]:
             source = render_graph(
@@ -207,7 +207,7 @@ class TestGraphvizBackend:
             assert "digraph" in source.source
 
     def test_with_title(self, beer_game_graph):
-        graphviz = pytest.importorskip("graphviz")
+        pytest.importorskip("graphviz")
 
         source = render_graph(
             beer_game_graph, backend="graphviz", title="Beer Game"
@@ -215,7 +215,7 @@ class TestGraphvizBackend:
         assert "Beer Game" in source.source
 
     def test_with_sim_result(self, beer_game_graph, fake_result):
-        graphviz = pytest.importorskip("graphviz")
+        pytest.importorskip("graphviz")
 
         source = render_graph(
             beer_game_graph, backend="graphviz", sim_result=fake_result
@@ -223,7 +223,7 @@ class TestGraphvizBackend:
         assert "BW=" in source.source
 
     def test_tree_topology(self, tree_graph):
-        graphviz = pytest.importorskip("graphviz")
+        pytest.importorskip("graphviz")
 
         source = render_graph(tree_graph, backend="graphviz")
         assert "Factory" in source.source

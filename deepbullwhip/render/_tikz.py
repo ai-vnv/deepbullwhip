@@ -30,7 +30,6 @@ True
 
 from __future__ import annotations
 
-from typing import Any
 
 import jinja2
 
@@ -140,7 +139,6 @@ def render_tikz(
 
     # Build node data
     node_data = []
-    node_names = list(graph.nodes.keys())
     for i, (name, cfg) in enumerate(graph.nodes.items()):
         if name in result_map:
             color_hex = theme.bw_color(result_map[name].bullwhip_ratio)

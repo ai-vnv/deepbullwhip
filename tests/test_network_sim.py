@@ -197,7 +197,7 @@ class TestTreeTopologySimulation:
 
 class TestFromNetworkx:
     def test_from_networkx_classmethod(self):
-        networkx = pytest.importorskip("networkx")
+        pytest.importorskip("networkx")
         import networkx as nx
 
         G = nx.DiGraph()
@@ -209,7 +209,7 @@ class TestFromNetworkx:
         assert len(chain._echelons) == 2
 
     def test_from_networkx_simulation(self):
-        networkx = pytest.importorskip("networkx")
+        pytest.importorskip("networkx")
         import networkx as nx
 
         G = nx.DiGraph()

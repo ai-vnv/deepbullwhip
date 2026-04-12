@@ -125,7 +125,7 @@ def build_network_design_model(
     ImportError
         If ``pyomo`` is not installed.
     """
-    pyo = import_optional("pyomo", "optimize")
+    import_optional("pyomo", "optimize")
     from pyomo.environ import (
         Binary,
         ConcreteModel,
@@ -281,7 +281,7 @@ def solve_network_design(
     RuntimeError
         If the solver fails to find a feasible solution.
     """
-    pyo = import_optional("pyomo", "optimize")
+    import_optional("pyomo", "optimize")
     from pyomo.environ import SolverFactory, value
     from pyomo.opt import TerminationCondition
 

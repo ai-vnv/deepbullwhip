@@ -144,7 +144,7 @@ def render_network(
     ]
 
     if title:
-        dot_lines.append(f'    labelloc="t";')
+        dot_lines.append('    labelloc="t";')
         dot_lines.append(f'    label="{title}";')
         dot_lines.append('    fontsize=14;')
         dot_lines.append('    fontname="Helvetica Bold";')
@@ -244,7 +244,7 @@ def render_simulation_snapshot(
         '    bgcolor="white";',
         '    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10];',
         '    edge [fontname="Helvetica", fontsize=8];',
-        f'    labelloc="t";',
+        '    labelloc="t";',
         f'    label="Supply Chain State at t={period}";',
         '    fontsize=14;',
         '    fontname="Helvetica Bold";',

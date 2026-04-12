@@ -33,12 +33,9 @@ Examples
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 
-from deepbullwhip._optional import import_optional
-from deepbullwhip._types import TimeSeries
 from deepbullwhip.chain.graph import SupplyChainGraph
 
 

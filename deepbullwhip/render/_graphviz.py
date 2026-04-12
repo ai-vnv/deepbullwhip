@@ -77,7 +77,7 @@ def render_graphviz(
 
     lines = [
         "digraph SupplyChain {",
-        f"    rankdir=TB;",
+        "    rankdir=TB;",
         f'    bgcolor="{theme.figure.background}";',
         f'    node [shape=box, style="rounded,filled", fontname="{fontname}", '
         f'fontsize={theme.font.node_label_size}];',
@@ -86,13 +86,12 @@ def render_graphviz(
     ]
 
     if title:
-        lines.append(f'    labelloc="t";')
+        lines.append('    labelloc="t";')
         lines.append(f'    label="{title}";')
         lines.append(f"    fontsize={theme.font.title_size};")
         lines.append(f'    fontname="{fontname}";')
 
     # Nodes
-    node_names = list(graph.nodes.keys())
     for i, (name, cfg) in enumerate(graph.nodes.items()):
         label_parts = [f"<b>{name}</b>"]
         label_parts.append(
@@ -111,7 +110,7 @@ def render_graphviz(
         attrs = [
             f'label={label}',
             f'fillcolor="{color}{int(theme.node.fill_alpha * 255):02x}"',
-            f'fontcolor="white"',
+            'fontcolor="white"',
             f'penwidth={theme.node.border_width}',
         ]
 

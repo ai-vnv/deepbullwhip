@@ -1,6 +1,5 @@
 """Tests for the layout engine."""
 
-import pytest
 
 from deepbullwhip.chain.config import (
     EchelonConfig,

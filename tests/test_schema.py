@@ -98,7 +98,7 @@ class TestToDict:
             nodes={"A": EchelonConfig("A", 1, 0.1, 0.5)},
             edges={},
         )
-        d = to_dict(graph)
+        to_dict(graph)
         # No edges, but test the serializer handles inf in EdgeConfig
         graph2 = SupplyChainGraph(
             nodes={

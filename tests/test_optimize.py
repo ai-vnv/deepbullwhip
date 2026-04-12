@@ -117,7 +117,7 @@ class TestTuneSmoothingFactors:
 
 class TestBuildInventoryModel:
     def test_model_creation(self):
-        pyomo = pytest.importorskip("pyomo")
+        pytest.importorskip("pyomo")
 
         from deepbullwhip.optimize.inventory import build_inventory_model
 
@@ -131,7 +131,7 @@ class TestBuildInventoryModel:
         assert hasattr(model, "total_cost")
 
     def test_1d_demand(self):
-        pyomo = pytest.importorskip("pyomo")
+        pytest.importorskip("pyomo")
 
         from deepbullwhip.optimize.inventory import build_inventory_model
 
@@ -142,7 +142,7 @@ class TestBuildInventoryModel:
         assert model is not None
 
     def test_custom_service_levels(self):
-        pyomo = pytest.importorskip("pyomo")
+        pytest.importorskip("pyomo")
 
         from deepbullwhip.optimize.inventory import build_inventory_model
 
@@ -160,7 +160,7 @@ class TestBuildInventoryModel:
 
 class TestBuildNetworkDesignModel:
     def test_model_creation(self):
-        pyomo = pytest.importorskip("pyomo")
+        pytest.importorskip("pyomo")
 
         from deepbullwhip.optimize.network_design import build_network_design_model
 

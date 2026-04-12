@@ -8,7 +8,10 @@ Provides two publication-grade plot types:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
+
+if TYPE_CHECKING:
+    from deepbullwhip.chain.graph import SupplyChainGraph
 
 import matplotlib
 import matplotlib.figure
@@ -75,7 +78,6 @@ class SupplyChainNetwork:
         -------
         SupplyChainNetwork
         """
-        from deepbullwhip.chain.graph import SupplyChainGraph  # noqa: F811
 
         node_names = list(graph.nodes.keys())
         name_to_idx = {name: i for i, name in enumerate(node_names)}

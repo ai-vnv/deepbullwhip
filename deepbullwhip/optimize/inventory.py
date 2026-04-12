@@ -126,7 +126,7 @@ def build_inventory_model(
     >>> scenarios = np.random.default_rng(0).normal(10, 2, (20, 26))
     >>> model = build_inventory_model(graph, np.maximum(scenarios, 0))
     """
-    pyo = import_optional("pyomo", "optimize")
+    import_optional("pyomo", "optimize")
     from pyomo.environ import (
         ConcreteModel,
         NonNegativeReals,
@@ -306,7 +306,7 @@ def solve_model(
     >>> result.base_stock_levels  # doctest: +SKIP
     {'Retailer': 25.3, 'Manufacturer': 42.1}
     """
-    pyo = import_optional("pyomo", "optimize")
+    import_optional("pyomo", "optimize")
     from pyomo.environ import SolverFactory, value
     from pyomo.opt import TerminationCondition
 

@@ -32,6 +32,11 @@ figures/
 # Jupyter
 .ipynb_checkpoints/
 
+# Notebook-generated outputs (reproducible by re-running notebooks)
+notebooks/*.png
+notebooks/*.pdf
+notebooks/*.csv
+
 # MkDocs
 site/
 

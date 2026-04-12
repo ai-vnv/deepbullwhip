@@ -116,6 +116,13 @@ def compute_positions(
     if defaults is None:
         defaults = LayoutDefaults()
 
+    orientation = defaults.orientation
+
+    # Auto-increase spacing for LR to accommodate wide nodes
+    tier_spacing = defaults.tier_spacing
+    if orientation == "LR" and tier_spacing < 3.5:
+        tier_spacing = 3.5
+
     # Use hints for tier overrides
     tiers = compute_tiers(graph)
     if layout_hints:
@@ -144,12 +151,12 @@ def compute_positions(
 
         for i, node_name in enumerate(nodes_in_tier):
             cross_pos = start_offset + i * defaults.node_spacing
-            tier_pos = (max_tier - tier) * defaults.tier_spacing
+            tier_pos = (max_tier - tier) * tier_spacing
 
-            if defaults.orientation == "TB":
+            if orientation == "TB":
                 positions[node_name] = (cross_pos, tier_pos)
             else:  # LR
-                positions[node_name] = (tier * defaults.tier_spacing, cross_pos)
+                positions[node_name] = (tier * tier_spacing, cross_pos)
 
     # Override with explicit positions
     if layout_hints:

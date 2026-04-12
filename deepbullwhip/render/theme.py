@@ -62,11 +62,11 @@ class NodeStyle:
     """
 
     shape: str = "rounded_rect"
-    fill_alpha: float = 0.25
-    border_width: float = 0.6
-    min_width: float = 1.8
-    min_height: float = 0.8
-    corner_radius: float = 0.1
+    fill_alpha: float = 0.90
+    border_width: float = 1.0
+    min_width: float = 0.85
+    min_height: float = 0.45
+    corner_radius: float = 0.06
 
 
 @dataclass(frozen=True)
@@ -315,9 +315,10 @@ KFUPM_THEME = Theme(
     name="kfupm",
     colors=["#006747", "#C4972F", "#2E8B8B", "#8B4513", "#4169E1", "#8B008B"],
     bw_colors={"low": "#2E8B57", "medium": "#DAA520", "high": "#CD5C5C"},
-    node=NodeStyle(fill_alpha=0.25, border_width=0.6),
-    edge=EdgeStyle(color="#888888", line_width=1.2),
-    font=FontStyle(family="serif", node_label_size=8.0, node_detail_size=6.5),
+    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=1.0, min_width=1.1),
+    edge=EdgeStyle(color="#333333", line_width=1.0),
+    font=FontStyle(family="sans-serif", node_label_size=8.0, node_detail_size=6.0,
+                   edge_label_size=7.5),
     figure=FigureStyle(width=7.0, dpi=300),
 )
 
@@ -325,10 +326,10 @@ IEEE_THEME = Theme(
     name="ieee",
     colors=["#333333", "#666666", "#999999", "#BBBBBB", "#444444", "#777777"],
     bw_colors={"low": "#555555", "medium": "#888888", "high": "#333333"},
-    node=NodeStyle(fill_alpha=0.15, border_width=0.8),
-    edge=EdgeStyle(color="#555555", line_width=0.8),
+    node=NodeStyle(shape="circle", fill_alpha=0.85, border_width=0.8, min_width=0.9),
+    edge=EdgeStyle(color="#444444", line_width=0.8),
     font=FontStyle(
-        family="serif", node_label_size=7.0, node_detail_size=5.5,
+        family="serif", node_label_size=6.5, node_detail_size=5.0,
         edge_label_size=6.0, title_size=9.0,
     ),
     figure=FigureStyle(width=3.5, dpi=300),
@@ -338,10 +339,10 @@ PRESENTATION_THEME = Theme(
     name="presentation",
     colors=["#006747", "#C4972F", "#2E8B8B", "#8B4513", "#4169E1", "#8B008B"],
     bw_colors={"low": "#2E8B57", "medium": "#DAA520", "high": "#CD5C5C"},
-    node=NodeStyle(fill_alpha=0.35, border_width=1.0, min_width=2.5, min_height=1.0),
-    edge=EdgeStyle(color="#666666", line_width=1.5),
+    node=NodeStyle(shape="circle", fill_alpha=0.90, border_width=1.5, min_width=1.5),
+    edge=EdgeStyle(color="#555555", line_width=1.5),
     font=FontStyle(
-        family="sans-serif", node_label_size=12.0, node_detail_size=9.0,
+        family="sans-serif", node_label_size=11.0, node_detail_size=8.0,
         edge_label_size=9.0, title_size=16.0,
     ),
     figure=FigureStyle(width=10.0, dpi=150),
@@ -349,11 +350,11 @@ PRESENTATION_THEME = Theme(
 
 MINIMAL_THEME = Theme(
     name="minimal",
-    colors=["#000000", "#444444", "#888888", "#BBBBBB", "#222222", "#666666"],
+    colors=["#555555", "#777777", "#999999", "#BBBBBB", "#444444", "#666666"],
     bw_colors={"low": "#888888", "medium": "#555555", "high": "#222222"},
-    node=NodeStyle(fill_alpha=0.0, border_width=0.8),
+    node=NodeStyle(shape="circle", fill_alpha=0.80, border_width=0.8, min_width=1.0),
     edge=EdgeStyle(color="#444444", line_width=0.8, arrow_style="->"),
-    font=FontStyle(family="serif", node_label_size=8.0, node_detail_size=6.0),
+    font=FontStyle(family="sans-serif", node_label_size=7.5, node_detail_size=5.5),
     figure=FigureStyle(width=7.0, dpi=300),
 )
 

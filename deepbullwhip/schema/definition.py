@@ -66,7 +66,7 @@ class LayoutDefaults:
     """
 
     orientation: str = "TB"
-    tier_spacing: float = 2.0
+    tier_spacing: float = 3.0
     node_spacing: float = 3.0
     auto_position: bool = True
 

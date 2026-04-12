@@ -55,7 +55,7 @@ class TestLayoutDefaults:
     def test_defaults(self):
         d = LayoutDefaults()
         assert d.orientation == "TB"
-        assert d.tier_spacing == 2.0
+        assert d.tier_spacing == 3.0
         assert d.node_spacing == 3.0
         assert d.auto_position is True
 

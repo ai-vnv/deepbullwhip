@@ -196,9 +196,8 @@ def compute_figure_size(
     x_range = max(xs) - min(xs) if len(xs) > 1 else 1.0
     y_range = max(ys) - min(ys) if len(ys) > 1 else 1.0
 
-    aspect = (y_range + 2 * theme.figure.margin) / (x_range + 2 * theme.figure.margin)
-    aspect = max(0.4, min(aspect, 1.5))  # clamp
-
-    width = theme.figure.width
-    height = width * aspect
+    # Scale figure to fit content -- grow figure, never shrink nodes
+    margin = theme.figure.margin
+    width = max(theme.figure.width, x_range + 2 * margin + 2)
+    height = max(theme.figure.width * 0.5, y_range + 2 * margin + 2)
     return (width, height)

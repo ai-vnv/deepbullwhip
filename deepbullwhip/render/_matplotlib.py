@@ -93,7 +93,7 @@ def render_matplotlib(
     if not positions:
         return fig
 
-    # Node radius
+    # Node radius -- keep large enough for readable text always
     R = theme.node.min_width / 2.0
 
     xs = [p[0] for p in positions.values()]

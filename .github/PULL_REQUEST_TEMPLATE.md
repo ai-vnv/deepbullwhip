@@ -15,6 +15,7 @@
 - [ ] Updated module `__init__.py`
 - [ ] Unit test in `tests/`
 - [ ] Optional dependencies added to `pyproject.toml` (if any)
+- [ ] If heavy optional deps (torch, gluonts): tests guarded with `pytest.mark.skipif`
 
 ## Benchmark output
 

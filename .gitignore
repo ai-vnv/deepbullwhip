@@ -42,3 +42,4 @@ site/
 
 # Claude Code
 .claude/
+lightning_logs/

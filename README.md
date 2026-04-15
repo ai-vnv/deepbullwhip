@@ -495,6 +495,8 @@ class MyDemandGenerator(DemandGenerator):
 - [ ] Unit test in `tests/`
 - [ ] Benchmark output from `python benchmarks/run_leaderboard.py` pasted in PR description
 - [ ] Optional dependencies added to `pyproject.toml` extras (if any)
+- [ ] If your component requires heavy/optional dependencies (torch, gluonts, etc.),
+  guard tests with `pytest.mark.skipif` so they skip gracefully when deps are missing
 
 ## Default Supply Chain Configuration
 

@@ -34,6 +34,7 @@ plugins:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+  - Benchmark Leaderboard: LEADERBOARD.md
   - API Reference:
     - Demand: api/demand.md
     - Policy: api/policy.md

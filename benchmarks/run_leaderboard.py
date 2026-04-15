@@ -31,9 +31,16 @@ N = 1000
 CHAIN = "semiconductor_4tier"
 DEMAND = "semiconductor_ar1"
 
+# ── Human-readable column labels ─────────────────────────────────────
+METRIC_LABELS: dict[str, str] = {
+    "CUM_BWR": "Cum. BWR",
+    "FILL_RATE": "Fill Rate",
+    "TC": "Total Cost",
+    "NSAmp": "NS Amp.",
+}
+
 # ── Component metadata: contributor + reference ──────────────────────
 # Add an entry here when contributing a new component.
-# Format: "registry_name": {"contributor": "Name", "reference": "DOI or paper"}
 COMPONENT_META: dict[str, dict[str, str]] = {
     # Forecasters
     "naive": {
@@ -88,11 +95,18 @@ COMPONENT_META: dict[str, dict[str, str]] = {
     },
 }
 
+RANK_BADGES = ["&#129351;", "&#129352;", "&#129353;"]  # gold, silver, bronze
+
 
 def _get_meta(name: str) -> tuple[str, str]:
     """Return (contributor, reference) for a component name."""
     meta = COMPONENT_META.get(name, {})
     return meta.get("contributor", ""), meta.get("reference", "")
+
+
+def _col_label(col: str) -> str:
+    """Return human-readable label for a metric column."""
+    return METRIC_LABELS.get(col, col)
 
 
 def run_forecaster_sweep() -> pd.DataFrame:
@@ -153,59 +167,137 @@ def run_demand_sweep() -> pd.DataFrame:
     return df.pivot_table(index="demand", columns="metric", values="value")
 
 
-def format_markdown_table(
+def format_table(
     df: pd.DataFrame,
     title: str,
+    description: str,
     sort_by: str = "TC",
     ascending: bool = True,
 ) -> str:
-    """Convert DataFrame to a sortable HTML table with title."""
+    """Convert DataFrame to a styled, sortable HTML table."""
     if df.empty:
         return f"### {title}\n\n_No results._\n"
 
-    sort_col = sort_by if sort_by in df.columns else ("TC" if "TC" in df.columns else df.columns[0])
+    sort_col = sort_by if sort_by in df.columns else (
+        "TC" if "TC" in df.columns else df.columns[0]
+    )
     df_sorted = df.sort_values(sort_col, ascending=ascending)
     cols = df.columns.tolist()
 
-    lines = [f"### {title}\n"]
+    lines = []
+    lines.append(f'<h3>{title}</h3>')
+    lines.append(f'<p class="lb-desc">{description}</p>')
+    lines.append("")
+    lines.append('<table class="lb-table sortable">')
 
-    # Build HTML table with sortable headers (JS at bottom of file)
-    lines.append('<table class="sortable">')
-
-    # Header row
-    header_cells = ['<th>Component</th>', '<th>Contributor</th>', '<th>Reference</th>']
+    # Header
+    header = ['<th class="lb-rank">#</th>', '<th>Component</th>',
+              '<th>Contributor</th>', '<th>Reference</th>']
     for c in cols:
-        header_cells.append(f'<th>{c}</th>')
-    lines.append('  <thead><tr>' + ''.join(header_cells) + '</tr></thead>')
+        header.append(f'<th class="lb-metric">{_col_label(c)} <span class="sort-icon"></span></th>')
+    lines.append('  <thead><tr>' + ''.join(header) + '</tr></thead>')
 
-    # Body rows
+    # Body
     lines.append('  <tbody>')
-    for idx, row in df_sorted.iterrows():
+    for rank, (idx, row) in enumerate(df_sorted.iterrows()):
         contributor, reference = _get_meta(str(idx))
+        badge = RANK_BADGES[rank] if rank < 3 else str(rank + 1)
+        ref_cell = f'<span class="lb-ref">{reference}</span>' if reference else '<span class="lb-ref lb-none">&mdash;</span>'
         cells = [
-            f'<td><code>{idx}</code></td>',
+            f'<td class="lb-rank">{badge}</td>',
+            f'<td class="lb-name"><code>{idx}</code></td>',
             f'<td>{contributor}</td>',
-            f'<td>{reference}</td>',
+            f'<td>{ref_cell}</td>',
         ]
         for c in cols:
             v = row[c]
             if isinstance(v, float):
-                cells.append(f'<td>{v:,.1f}</td>')
+                if c == "FILL_RATE":
+                    cells.append(f'<td class="lb-metric">{v:.1%}</td>')
+                else:
+                    cells.append(f'<td class="lb-metric">{v:,.1f}</td>')
             else:
-                cells.append(f'<td>{v}</td>')
-        lines.append('    <tr>' + ''.join(cells) + '</tr>')
+                cells.append(f'<td class="lb-metric">{v}</td>')
+        tr_class = ' class="lb-top3"' if rank < 3 else ""
+        lines.append(f'    <tr{tr_class}>' + ''.join(cells) + '</tr>')
     lines.append('  </tbody>')
     lines.append('</table>\n')
 
     return "\n".join(lines)
 
 
-SORTABLE_JS = """
+# ── Embedded styles + sortable JS ────────────────────────────────────
+
+LEADERBOARD_STYLES = """\
+<style>
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  margin: 1em 0 2em 0;
+}
+.lb-table thead {
+  background: var(--md-primary-fg-color, #006747);
+  color: #fff;
+}
+.lb-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.lb-table th:hover {
+  background: var(--md-primary-fg-color--dark, #004d35);
+}
+.lb-table th .sort-icon::after { content: " \\2195"; font-size: 0.7em; opacity: 0.5; }
+.lb-table td {
+  padding: 8px 14px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.lb-table tbody tr:hover {
+  background: var(--md-primary-fg-color--light, #e8f5f0);
+}
+.lb-table tr.lb-top3 {
+  font-weight: 500;
+}
+.lb-rank { text-align: center; width: 40px; }
+.lb-name code {
+  background: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.88em;
+}
+.lb-metric { text-align: right; font-variant-numeric: tabular-nums; }
+.lb-ref { font-size: 0.85em; }
+.lb-ref.lb-none { opacity: 0.3; }
+.lb-desc {
+  color: #666;
+  font-size: 0.9em;
+  margin: -0.5em 0 0.5em 0;
+}
+.lb-protocol {
+  background: #f8f9fa;
+  border-left: 3px solid var(--md-primary-fg-color, #006747);
+  padding: 12px 16px;
+  margin: 1em 0 2em 0;
+  font-size: 0.88em;
+  color: #555;
+  line-height: 1.6;
+}
+.lb-protocol code {
+  background: #eef;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+</style>
+"""
+
+SORTABLE_JS = """\
 <script>
-// Minimal sortable tables: click any <th> to sort
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("table.sortable th").forEach(function (th) {
-    th.style.cursor = "pointer";
     th.addEventListener("click", function () {
       var table = th.closest("table");
       var tbody = table.querySelector("tbody");
@@ -213,9 +305,13 @@ document.addEventListener("DOMContentLoaded", function () {
       var idx = Array.from(th.parentNode.children).indexOf(th);
       var asc = th.dataset.sortDir !== "asc";
       th.dataset.sortDir = asc ? "asc" : "desc";
+      // Reset other headers
+      th.parentNode.querySelectorAll("th").forEach(function(h) {
+        if (h !== th) delete h.dataset.sortDir;
+      });
       rows.sort(function (a, b) {
-        var av = a.children[idx].textContent.replace(/,/g, "");
-        var bv = b.children[idx].textContent.replace(/,/g, "");
+        var av = a.children[idx].textContent.replace(/,/g, "").replace(/%/g, "");
+        var bv = b.children[idx].textContent.replace(/,/g, "").replace(/%/g, "");
         var an = parseFloat(av), bn = parseFloat(bv);
         if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
         return asc ? av.localeCompare(bv) : bv.localeCompare(av);
@@ -231,46 +327,68 @@ document.addEventListener("DOMContentLoaded", function () {
 def main(output_path: str = "docs/LEADERBOARD.md", sort_by: str = "TC") -> None:
     t_start = time.perf_counter()
     sections = []
-    sections.append("# deepbullwhip Benchmark Leaderboard\n")
-    sections.append("> Auto-generated by `benchmarks/run_leaderboard.py`.")
-    sections.append(
-        f"> Benchmark protocol: chain=`{CHAIN}`, demand=`{DEMAND}`, "
-        f"T={T}, N={N:,}, seed={SEED}"
-    )
-    sections.append(
-        "> All results reported at the most upstream echelon (E4)."
-    )
-    sections.append(
-        "> Click any column header to sort.\n"
-    )
+
+    # Title
+    sections.append("# Benchmark Leaderboard\n")
+
+    # Protocol box
+    sections.append(LEADERBOARD_STYLES)
+    sections.append(f"""\
+<div class="lb-protocol">
+<strong>Benchmark protocol</strong><br>
+Chain: <code>{CHAIN}</code> &nbsp;|&nbsp;
+Demand: <code>{DEMAND}</code> &nbsp;|&nbsp;
+T={T} periods &nbsp;|&nbsp;
+N={N:,} Monte Carlo paths &nbsp;|&nbsp;
+Seed={SEED}<br>
+All results reported at the most upstream echelon (E4).
+Sorted by Total Cost (lower is better). Click any column header to re-sort.
+</div>
+""")
 
     print("Running forecaster sweep...")
     fc_df = run_forecaster_sweep()
     sections.append(
-        format_markdown_table(
-            fc_df, "Forecaster Leaderboard (policy=order_up_to)", sort_by=sort_by
+        format_table(
+            fc_df,
+            "Forecaster Leaderboard",
+            "Fixed policy: <code>order_up_to</code> &nbsp;|&nbsp; Fixed demand: <code>semiconductor_ar1</code>",
+            sort_by=sort_by,
         )
     )
 
     print("Running policy sweep...")
     pol_df = run_policy_sweep()
     sections.append(
-        format_markdown_table(
-            pol_df, "Policy Leaderboard (forecaster=naive)", sort_by=sort_by
+        format_table(
+            pol_df,
+            "Policy Leaderboard",
+            "Fixed forecaster: <code>naive</code> &nbsp;|&nbsp; Fixed demand: <code>semiconductor_ar1</code>",
+            sort_by=sort_by,
         )
     )
 
     print("Running demand generator sweep...")
     dem_df = run_demand_sweep()
     sections.append(
-        format_markdown_table(
+        format_table(
             dem_df,
-            "Demand Generator Leaderboard (policy=order_up_to, forecaster=naive)",
+            "Demand Generator Leaderboard",
+            "Fixed policy: <code>order_up_to</code> &nbsp;|&nbsp; Fixed forecaster: <code>naive</code>",
             sort_by=sort_by,
         )
     )
 
-    # Append sortable JS for rendered HTML (MkDocs / GitHub Pages)
+    # Footer
+    sections.append("""\
+---
+
+<p style="font-size: 0.8em; color: #999; margin-top: 2em;">
+Auto-generated by <code>benchmarks/run_leaderboard.py</code>.
+To reproduce: <code>python benchmarks/run_leaderboard.py</code>
+</p>
+""")
+
     sections.append(SORTABLE_JS)
 
     md = "\n".join(sections)
@@ -280,7 +398,6 @@ def main(output_path: str = "docs/LEADERBOARD.md", sort_by: str = "TC") -> None:
 
     elapsed = time.perf_counter() - t_start
     print(f"\nLeaderboard written to {output_path} ({elapsed:.1f}s)")
-    print(md)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@
 [![Docs](https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747)](https://ai-vnv.github.io/deepbullwhip)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/ai-vnv/deepbullwhip)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.4.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
+[![Version](https://img.shields.io/badge/version-0.4.1-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
 
 **Multi-tier supply chain bullwhip effect simulator with modular demand models, ordering policies, and cost functions.**
 
@@ -370,8 +370,9 @@ tex = render_graph(tree, backend="tikz", theme="ieee")  # For LaTeX papers
 
 ## Benchmark Leaderboard
 
-See [docs/LEADERBOARD.md](docs/LEADERBOARD.md) for the latest benchmark results
-across all registered forecasters, policies, and demand generators.
+See the [Benchmark Leaderboard](https://ai-vnv.github.io/deepbullwhip/LEADERBOARD/) on the docs site
+([source](docs/LEADERBOARD.md)) for the latest benchmark results across all
+registered forecasters, policies, and demand generators.
 
 Run it yourself:
 

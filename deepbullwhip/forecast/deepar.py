@@ -63,7 +63,7 @@ Reference:
 from __future__ import annotations
 
 import numpy as np
-from typing import Optional, Sequence
+from typing import Sequence
 
 from deepbullwhip.forecast.base import Forecaster
 from deepbullwhip.registry import register
@@ -378,7 +378,6 @@ def run_deepar_benchmark_example():
     """
     from deepbullwhip.demand.semiconductor import SemiconductorDemandGenerator
     from deepbullwhip.chain.vectorized import VectorizedSupplyChain
-    from deepbullwhip.benchmark import BenchmarkRunner
 
     print("=" * 60)
     print("DeepAR + deepbullwhip Integration Benchmark")

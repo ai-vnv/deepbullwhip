@@ -5,7 +5,7 @@
 [![Docs](https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747)](https://ai-vnv.github.io/deepbullwhip)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/ai-vnv/deepbullwhip)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.3.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
+[![Version](https://img.shields.io/badge/version-0.4.0-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
 
 **Multi-tier supply chain bullwhip effect simulator with modular demand models, ordering policies, and cost functions.**
 
@@ -42,7 +42,7 @@ tradeoff in ML-driven semiconductor supply chains (see `simulation.ipynb`).
 | **Demand generators** | Pluggable via `DemandGenerator` ABC. Built-in: AR(1) semiconductor, Beer Game step, ARMA(p,q), Replay from data |
 | **Ordering policies** | Pluggable via `OrderingPolicy` ABC. Built-in: OUT, Proportional OUT, Smoothing OUT, Constant Order |
 | **Cost functions** | Pluggable via `CostFunction` ABC. Built-in: Newsvendor (h+b), Perishable (h+b+obsolescence) |
-| **Forecasters** | Pluggable via `Forecaster` ABC. Built-in: Naive, Moving Average, Exponential Smoothing |
+| **Forecasters** | Pluggable via `Forecaster` ABC. Built-in: Naive, Moving Average, Exponential Smoothing, DeepAR (GluonTS) |
 | **Benchmarking** | `BenchmarkRunner` for standardized policy/forecaster comparison with LaTeX/CSV export |
 | **Datasets** | Built-in datasets: Beer Game, WSTS semiconductor, synthetic AR(1)/ARMA, M5 Walmart |
 | **Registry** | Decorator-based `@register` system for easy extensibility and model discovery |
@@ -58,13 +58,18 @@ tradeoff in ML-driven semiconductor supply chains (see `simulation.ipynb`).
 ## Installation
 
 ```bash
-# Clone the repository
+# Install from PyPI
+pip install deepbullwhip
+
+# With all optional dependencies
+pip install deepbullwhip[all]
+```
+
+For development:
+
+```bash
 git clone https://github.com/ai-vnv/deepbullwhip.git
 cd deepbullwhip
-
-# Create virtual environment and install
-python -m venv venv
-source venv/bin/activate
 pip install -e ".[dev]"
 ```
 
@@ -75,9 +80,18 @@ pip install -e ".[dev]"
 - **Optional (Network):** networkx (`pip install deepbullwhip[network]`)
 - **Optional (Viz):** graphviz (`pip install deepbullwhip[viz]`)
 - **Optional (Optimize):** pyomo (`pip install deepbullwhip[optimize]`)
-- **Optional (ML):** scikit-learn, torch
+- **Optional (ML):** scikit-learn, torch, gluonts (`pip install deepbullwhip[ml]`)
 - **Optional (Benchmark):** kaggle, tabulate
 - **All optional:** `pip install deepbullwhip[all]`
+
+> **Apple Silicon (MPS) note:** GluonTS/PyTorch Lightning may fail on M1/M2/M3 Macs
+> when the MPS backend is auto-selected. Set `PYTORCH_ENABLE_MPS_FALLBACK=1` before
+> running DeepAR training or benchmarks:
+> ```bash
+> export PYTORCH_ENABLE_MPS_FALLBACK=1
+> python benchmarks/run_leaderboard.py
+> ```
+> The CAIE experiment scripts set this automatically.
 
 ## Quick Start
 
@@ -354,6 +368,134 @@ fig = render_graph(tree, theme="presentation", title="Distribution Network")
 tex = render_graph(tree, backend="tikz", theme="ieee")  # For LaTeX papers
 ```
 
+## Benchmark Leaderboard
+
+See [docs/LEADERBOARD.md](docs/LEADERBOARD.md) for the latest benchmark results
+across all registered forecasters, policies, and demand generators.
+
+Run it yourself:
+
+```bash
+python benchmarks/run_leaderboard.py
+```
+
+## Contributing a New Component
+
+deepbullwhip uses a registry architecture — adding a new forecaster, policy,
+or demand generator requires no changes to existing code.
+
+### Adding a Forecaster
+
+**1. Implement the Forecaster ABC**
+
+Create a file `deepbullwhip/forecast/my_forecaster.py`:
+
+```python
+import numpy as np
+from deepbullwhip.forecast.base import Forecaster
+from deepbullwhip.registry import register
+
+@register("forecaster", "my_forecaster")
+class MyForecaster(Forecaster):
+    """One-line description."""
+
+    def __init__(self, my_param: float = 1.0):
+        self.my_param = my_param
+
+    def forecast(
+        self, demand_history: np.ndarray, steps_ahead: int = 1
+    ) -> tuple[float, float]:
+        # Your logic here — must return (mean, std)
+        mean = float(np.mean(demand_history[-10:]))
+        std = float(np.std(demand_history[-10:]))
+        return mean, std
+```
+
+Key points:
+- Must inherit from `Forecaster`
+- Must use `@register("forecaster", "name")` decorator
+- Must implement `forecast(demand_history, steps_ahead) -> (mean, std)`
+- Optionally override `generate_forecasts(demand)` for batch efficiency
+- If it has heavy dependencies (torch, gluonts, etc.), guard imports inside methods
+
+**2. Register in `__init__.py`**
+
+Add to `deepbullwhip/forecast/__init__.py`:
+
+```python
+# For lightweight dependencies:
+from deepbullwhip.forecast.my_forecaster import MyForecaster
+
+# For heavy/optional dependencies:
+try:
+    from deepbullwhip.forecast.my_forecaster import MyForecaster
+except ImportError:
+    pass  # requires optional dependency X
+```
+
+**3. Test locally**
+
+```python
+from deepbullwhip.benchmark import BenchmarkRunner
+
+runner = BenchmarkRunner("semiconductor_4tier", "semiconductor_ar1", T=156, N=200, seed=42)
+results = runner.run(
+    policies=["order_up_to"],
+    forecasters=["naive", "my_forecaster"],
+    metrics=["BWR", "CUM_BWR", "FILL_RATE", "TC"],
+)
+print(results.pivot_table(
+    index=["forecaster", "echelon"],
+    columns="metric", values="value",
+).to_string(float_format="%.1f"))
+```
+
+**4. Run the official benchmark**
+
+```bash
+python benchmarks/run_leaderboard.py
+```
+
+Include the output in your PR description.
+
+### Adding a Policy
+
+Same pattern — implement `OrderingPolicy` ABC:
+
+```python
+from deepbullwhip.policy.base import OrderingPolicy
+from deepbullwhip.registry import register
+
+@register("policy", "my_policy")
+class MyPolicy(OrderingPolicy):
+    def compute_order(self, inventory_position, forecast_mean, forecast_std) -> float:
+        ...
+```
+
+### Adding a Demand Generator
+
+Same pattern — implement `DemandGenerator` ABC:
+
+```python
+import numpy as np
+from deepbullwhip.demand.base import DemandGenerator
+from deepbullwhip.registry import register
+
+@register("demand", "my_demand")
+class MyDemandGenerator(DemandGenerator):
+    def generate(self, T: int, seed: int | None = None) -> np.ndarray:
+        ...
+```
+
+### PR Checklist
+
+- [ ] Component file in the appropriate module (`forecast/`, `policy/`, `demand/`)
+- [ ] `@register()` decorator with unique name
+- [ ] Updated module `__init__.py`
+- [ ] Unit test in `tests/`
+- [ ] Benchmark output from `python benchmarks/run_leaderboard.py` pasted in PR description
+- [ ] Optional dependencies added to `pyproject.toml` extras (if any)
+
 ## Default Supply Chain Configuration
 
 | Echelon | Role | Lead Time | h (holding) | b (backorder) |
@@ -509,7 +651,8 @@ deepbullwhip/
 │   ├── base.py                 # Forecaster ABC
 │   ├── naive.py                # Naive (sample mean/std)
 │   ├── moving_average.py       # Rolling window MA
-│   └── exponential_smoothing.py # Single exponential smoothing
+│   ├── exponential_smoothing.py # Single exponential smoothing
+│   └── deepar.py               # DeepAR neural forecaster (GluonTS)
 ├── metrics/
 │   ├── bullwhip.py             # BWR, CumulativeBWR
 │   ├── inventory.py            # NSAmp, FillRate
@@ -554,6 +697,18 @@ deepbullwhip/
 │   ├── _graphviz.py            # Graphviz backend
 │   ├── _tikz.py                # TikZ/LaTeX backend
 │   └── api.py                  # Unified render_graph() entry point
+
+benchmarks/
+└── run_leaderboard.py              # Auto-generate docs/LEADERBOARD.md
+
+scripts/
+├── visualize.py                    # Batch diagnostic figure generation
+├── generate_caie_figures.py        # CAIE 2026 paper figures (14 figures)
+├── run_all_experiments.py           # CAIE 2026 paper numerical results
+├── exp_chen_validation.py          # Chen et al. (2000) BWR formula validation
+├── exp_corollary1.py               # Cumulative BWR concentration theorem
+├── exp_cost_policy.py              # Cost asymmetry x policy interaction
+└── exp_pareto.py                   # POUT alpha Pareto frontier
 
 tests/                          # 385 unit tests, 98%+ coverage
 notebooks/                      # All notebooks run on Google Colab

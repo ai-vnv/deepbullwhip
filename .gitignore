@@ -26,7 +26,7 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Generated figures (reproducible via scripts/visualize.py)
+# Generated figures (reproducible via scripts/visualize.py and scripts/arief2026/)
 figures/
 
 # Jupyter

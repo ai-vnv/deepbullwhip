@@ -81,7 +81,7 @@ from deepbullwhip.schema.io import (
 from deepbullwhip.render.api import render_from_json, render_graph
 from deepbullwhip.render.theme import Theme, get_theme, list_themes, register_theme
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     # Core (v0.1.0)

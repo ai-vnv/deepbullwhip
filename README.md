@@ -1,11 +1,7 @@
 # DeepBullwhip
 
-[![CI](https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml/badge.svg)](https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/ai-vnv/deepbullwhip/graph/badge.svg)](https://codecov.io/gh/ai-vnv/deepbullwhip)
-[![Docs](https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747)](https://ai-vnv.github.io/deepbullwhip)
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/ai-vnv/deepbullwhip)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.4.1-orange)](https://github.com/ai-vnv/deepbullwhip/releases)
+[![CI][ci-badge]][ci-url] [![codecov][cov-badge]][cov-url] [![V&V][vnv-badge]][vnv-url]
+[![Docs][docs-badge]][docs-url] [![Python][py-badge]][repo-url] [![License][lic-badge]][lic-url] [![Version][ver-badge]][rel-url]
 
 **Multi-tier supply chain bullwhip effect simulator with modular demand models, ordering policies, and cost functions.**
 
@@ -771,3 +767,19 @@ Full API documentation is available at [ai-vnv.github.io/deepbullwhip](https://a
 MIT License. See [LICENSE](LICENSE) for details.
 
 Developed and maintained by the [AI V&V Lab](https://ai-vnv.kfupm.io) at KFUPM.
+
+<!-- badges -->
+[ci-badge]:   https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml/badge.svg
+[ci-url]:     https://github.com/ai-vnv/deepbullwhip/actions/workflows/ci.yml
+[cov-badge]:  https://codecov.io/gh/ai-vnv/deepbullwhip/graph/badge.svg
+[cov-url]:    https://codecov.io/gh/ai-vnv/deepbullwhip
+[vnv-badge]:  https://img.shields.io/endpoint?url=https://ai-vnv.github.io/deepbullwhip/vnv-badge.json
+[vnv-url]:    https://github.com/ai-vnv/deepbullwhip/blob/main/vnvspec.yaml
+[docs-badge]: https://img.shields.io/badge/docs-ai--vnv.github.io%2Fdeepbullwhip-006747
+[docs-url]:   https://ai-vnv.github.io/deepbullwhip
+[py-badge]:   https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue
+[repo-url]:   https://github.com/ai-vnv/deepbullwhip
+[lic-badge]:  https://img.shields.io/badge/License-MIT-yellow.svg
+[lic-url]:    https://opensource.org/licenses/MIT
+[ver-badge]:  https://img.shields.io/badge/version-0.4.1-orange
+[rel-url]:    https://github.com/ai-vnv/deepbullwhip/releases

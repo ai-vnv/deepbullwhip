@@ -20,7 +20,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e ".[docs]"
+          pip install -e ".[docs,dev,network]"
+          pip install vnvspec
+
+      - name: Run V&V assessment
+        run: python scripts/vnv_assess.py
+
+      - name: Copy badge to docs site
+        run: cp vnv-badge.json docs/vnv-badge.json
 
       - name: Build and deploy docs
         run: mkdocs gh-deploy --force

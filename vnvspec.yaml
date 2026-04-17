@@ -1,0 +1,339 @@
+name: deepbullwhip
+version: "0.4.1"
+description: >
+  Verification & Validation specification for DeepBullwhip, a multi-tier
+  supply chain bullwhip effect simulator. Covers simulation correctness,
+  metric validity, policy contract compliance, forecast contract compliance,
+  cost function properties, vectorized engine consistency, benchmark
+  reproducibility, registry extensibility, schema serialization fidelity,
+  topology validation.
+
+requirements:
+  # ── Simulation Core ────────────────────────────────────────────────────
+  - id: REQ-SIM-001
+    statement: >
+      The system shall produce non-negative order quantities at every
+      echelon for all time steps in a serial supply chain simulation.
+    rationale: >
+      Order quantities represent physical shipments; negative orders
+      are infeasible in real supply chain operations.
+    verification_method: test
+    acceptance_criteria:
+      - "All order quantities >= 0 across all echelons."
+    priority: blocking
+
+  - id: REQ-SIM-002
+    statement: >
+      The system shall return simulation result arrays whose row count
+      equals the number of echelons, with each row having length equal
+      to the number of time steps.
+    rationale: >
+      Consistent array shapes are required for downstream metric
+      computation.
+    verification_method: test
+    acceptance_criteria:
+      - "orders.shape == (K, T)"
+      - "inventory.shape == (K, T)"
+      - "demand.shape == (K, T)"
+    priority: blocking
+
+  - id: REQ-SIM-003
+    statement: >
+      The system shall construct the default semiconductor topology with
+      exactly four echelons whose names match the configured defaults.
+    rationale: >
+      The default semiconductor topology is a standard reference
+      configuration that users expect to work out of the box.
+    verification_method: test
+    acceptance_criteria:
+      - "Default chain has exactly four echelons."
+      - "Echelon names match the semiconductor config names."
+    priority: high
+
+  - id: REQ-SIM-004
+    statement: >
+      The system shall restore each echelon to its initial condition
+      when the reset method is called, clearing accumulated state.
+    rationale: >
+      Correct reset behavior is essential for running multiple
+      independent simulation replications without state leakage.
+    verification_method: test
+    acceptance_criteria:
+      - "After reset, pipeline length equals initial lead time."
+      - "After reset, accumulated orders are cleared."
+    priority: high
+
+  # ── Metrics ────────────────────────────────────────────────────────────
+  - id: REQ-MET-001
+    statement: >
+      The system shall compute a strictly positive bullwhip ratio (BWR)
+      for any simulation with non-zero demand variance.
+    rationale: >
+      BWR is defined as the ratio of order variance to demand variance;
+      it must be positive when demand variance is nonzero.
+    verification_method: test
+    acceptance_criteria:
+      - "BWR > 0 for all echelons when demand has positive variance."
+    priority: blocking
+
+  - id: REQ-MET-002
+    statement: >
+      The system shall compute fill rates bounded between zero (unitless)
+      inclusive to one (unitless) inclusive for every echelon.
+    rationale: >
+      Fill rate represents a fraction of demand satisfied from stock;
+      it must be a valid probability.
+    verification_method: test
+    acceptance_criteria:
+      - "0 <= fill_rate <= 1 for every echelon."
+    priority: blocking
+
+  - id: REQ-MET-003
+    statement: >
+      The system shall compute a total supply chain cost that equals the
+      sum of individual echelon costs.
+    rationale: >
+      Cost aggregation must be additive to ensure consistent financial
+      reporting across the chain.
+    verification_method: test
+    acceptance_criteria:
+      - "total_cost == sum(echelon_costs) within floating-point tolerance."
+    priority: blocking
+
+  - id: REQ-MET-004
+    statement: >
+      The system shall compute a finite positive net stock amplification
+      (NSAmp) metric for simulations with non-zero demand variance.
+    rationale: >
+      NSAmp measures inventory variability amplification; it must be
+      well-defined for meaningful demand scenarios.
+    verification_method: test
+    acceptance_criteria:
+      - "NSAmp is finite, greater than zero when demand variance > 0."
+    priority: high
+
+  # ── Cost Functions ─────────────────────────────────────────────────────
+  - id: REQ-COST-001
+    statement: >
+      The system shall apply holding cost to positive inventory levels,
+      backorder cost to negative inventory levels, with zero cost at
+      zero inventory in the Newsvendor cost function.
+    rationale: >
+      The Newsvendor cost model is a foundational inventory model;
+      correct cost assignment is critical to valid optimization.
+    verification_method: test
+    acceptance_criteria:
+      - "cost(inventory > 0) == h * inventory"
+      - "cost(inventory < 0) == b * |inventory|"
+      - "cost(inventory == 0) == 0"
+    priority: blocking
+
+  - id: REQ-COST-002
+    statement: >
+      The system shall compute a non-negative perishable cost for any
+      inventory level, including obsolescence.
+    rationale: >
+      Perishable goods cost includes holding, backorder, obsolescence
+      components, all of which are non-negative.
+    verification_method: test
+    acceptance_criteria:
+      - "Perishable cost >= 0 for all inventory levels."
+    priority: high
+
+  # ── Ordering Policies ──────────────────────────────────────────────────
+  - id: REQ-POL-001
+    statement: >
+      The system shall return a non-negative order quantity from every
+      built-in ordering policy's compute_order method.
+    rationale: >
+      Policies must conform to the ABC interface contract; they must
+      produce physically meaningful order decisions.
+    verification_method: test
+    acceptance_criteria:
+      - "compute_order() returns a value >= 0 for all built-in policies."
+    priority: blocking
+
+  - id: REQ-POL-002
+    statement: >
+      The system shall converge orders to the demand level after the
+      initial transient under constant demand, with steady-state
+      deviation below one percent of the demand level.
+    rationale: >
+      After the initial inventory adjustment transient, a well-behaved
+      Order-Up-To policy should settle to ordering the demand quantity.
+    verification_method: test
+    acceptance_criteria:
+      - "After warmup (t > 20 periods), max |order - demand| / demand < 0.01 at the first echelon."
+    priority: high
+
+  # ── Demand Generators ──────────────────────────────────────────────────
+  - id: REQ-DEM-001
+    statement: >
+      The system shall produce non-negative demand values from every
+      built-in demand generator for all time steps.
+    rationale: >
+      Demand represents real-world customer orders; negative demand
+      is physically meaningless.
+    verification_method: test
+    acceptance_criteria:
+      - "All generated demand values >= 0 across all generators."
+    priority: blocking
+
+  - id: REQ-DEM-002
+    statement: >
+      The system shall produce positive mean demand from the
+      semiconductor generator when configured with a positive base
+      demand parameter.
+    rationale: >
+      AR(1) semiconductor demand with positive base should not
+      degenerate to zero-mean output.
+    verification_method: test
+    acceptance_criteria:
+      - "Mean of generated demand > 0 for positive base demand."
+    priority: high
+
+  # ── Forecasters ────────────────────────────────────────────────────────
+  - id: REQ-FOR-001
+    statement: >
+      The system shall return a (mean, std) tuple with non-negative
+      standard deviation from every built-in forecaster.
+    rationale: >
+      Forecast interface contract requires both point forecast along
+      with uncertainty estimate; std must be non-negative.
+    verification_method: test
+    acceptance_criteria:
+      - "forecast() returns (mean, std) tuple."
+      - "std >= 0 for all forecasters."
+    priority: blocking
+
+  - id: REQ-FOR-002
+    statement: >
+      The system shall produce a moving average forecast equal to the
+      arithmetic mean of the most recent window of observations, within
+      floating-point tolerance.
+    rationale: >
+      Moving average is a well-defined computation; the implementation
+      must match the mathematical definition exactly.
+    verification_method: test
+    acceptance_criteria:
+      - "|forecast_mean - mean(last_w_observations)| < 1e-10"
+    priority: high
+
+  # ── Vectorized Engine ──────────────────────────────────────────────────
+  - id: REQ-VEC-001
+    statement: >
+      The system shall produce qualitatively consistent results between
+      the vectorized engine's single-path simulation results versus the
+      serial engine, with both yielding positive bullwhip ratios.
+    rationale: >
+      The vectorized engine uses a different pipeline implementation
+      than the serial engine; exact numerical equivalence is not
+      expected, but both must produce qualitatively consistent results.
+    verification_method: test
+    acceptance_criteria:
+      - "Both engines produce positive bullwhip ratios for all echelons."
+      - "Both engines produce positive total costs."
+    priority: blocking
+
+  - id: REQ-VEC-002
+    statement: >
+      The system shall produce non-negative total costs for all Monte
+      Carlo paths in the vectorized batch simulation.
+    rationale: >
+      Total supply chain costs represent cumulative holding along with
+      backorder expenses; they must be non-negative.
+    verification_method: test
+    acceptance_criteria:
+      - "total_costs >= 0 for all N Monte Carlo paths."
+    priority: blocking
+
+  - id: REQ-VEC-003
+    statement: >
+      The system shall correctly aggregate mean metrics across Monte
+      Carlo paths in the vectorized batch result.
+    rationale: >
+      Mean aggregation of BWR, fill rate, cost across paths must be
+      mathematically correct for valid statistical inference.
+    verification_method: test
+    acceptance_criteria:
+      - "mean_bullwhip_ratios == mean(bullwhip_ratios, axis=0) within 1e-10."
+    priority: high
+
+  # ── Benchmark Framework ────────────────────────────────────────────────
+  - id: REQ-BEN-001
+    statement: >
+      The system shall return a pandas DataFrame from BenchmarkRunner.run()
+      with one row per policy-forecaster combination.
+    rationale: >
+      The benchmark framework must produce structured, analyzable
+      output for systematic policy comparison.
+    verification_method: test
+    acceptance_criteria:
+      - "run() returns a DataFrame."
+      - "DataFrame has one row per (policy, forecaster) pair."
+    priority: high
+
+  - id: REQ-BEN-002
+    statement: >
+      The system shall export benchmark results to CSV files without
+      raising exceptions; it shall likewise export to LaTeX.
+    rationale: >
+      Export functionality must be reliable for reproducible research
+      reporting.
+    verification_method: test
+    acceptance_criteria:
+      - "export_csv() writes a readable CSV file."
+      - "export_latex() produces a valid LaTeX string."
+    priority: high
+
+  # ── Registry & Extensibility ───────────────────────────────────────────
+  - id: REQ-REG-001
+    statement: >
+      The component registry shall allow registration of custom
+      components by name, then retrieve them by that same name.
+    rationale: >
+      Extensibility via the registry is a core design principle; users
+      must be able to plug in custom components.
+    verification_method: test
+    acceptance_criteria:
+      - "Registered components are retrievable by their registered name."
+      - "Attempting to retrieve an unregistered name raises an appropriate error."
+    priority: high
+
+  # ── Schema & Serialization ─────────────────────────────────────────────
+  - id: REQ-SCH-001
+    statement: >
+      The system shall preserve supply chain configuration through a
+      JSON serialization round-trip, producing an equivalent graph.
+    rationale: >
+      JSON persistence enables reproducibility; round-trip fidelity is
+      essential.
+    verification_method: test
+    acceptance_criteria:
+      - "save_json() followed by load_json() produces identical configuration."
+    priority: high
+
+  # ── Network Topology ───────────────────────────────────────────────────
+  - id: REQ-NET-001
+    statement: >
+      The system shall raise a ValueError when topological_order is
+      called on a cyclic SupplyChainGraph.
+    rationale: >
+      Supply chain material flows are acyclic; cyclic graphs would
+      cause infinite loops in simulation.
+    verification_method: test
+    acceptance_criteria:
+      - "Calling topological_order on a cyclic graph raises a ValueError."
+    priority: blocking
+
+  - id: REQ-NET-002
+    statement: >
+      The system shall preserve all nodes along with all edges through
+      a bidirectional NetworkX conversion round-trip.
+    rationale: >
+      Bidirectional conversion enables interoperability with the
+      NetworkX ecosystem without data loss.
+    verification_method: test
+    acceptance_criteria:
+      - "Round-trip conversion preserves all nodes, all edges."
+    priority: high

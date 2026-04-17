@@ -1,0 +1,287 @@
+{
+  "spec_name": "deepbullwhip",
+  "spec_version": "0.4.1",
+  "created_at": "2026-04-17T19:31:55.206125Z",
+  "evidence": [
+    {
+      "id": "EV-AUTO-0001",
+      "requirement_id": "REQ-SIM-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.072124Z",
+      "details": {
+        "message": "min_order=0.000000"
+      }
+    },
+    {
+      "id": "EV-AUTO-0002",
+      "requirement_id": "REQ-SIM-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.072139Z",
+      "details": {
+        "message": "K=4, T=100, echelon_results=4"
+      }
+    },
+    {
+      "id": "EV-AUTO-0003",
+      "requirement_id": "REQ-SIM-003",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.072291Z",
+      "details": {
+        "message": "n=4, names=['Distributor', 'OSAT', 'Foundry', 'Supplier']"
+      }
+    },
+    {
+      "id": "EV-AUTO-0004",
+      "requirement_id": "REQ-SIM-004",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.074198Z",
+      "details": {
+        "message": "Reset restores initial pipeline length"
+      }
+    },
+    {
+      "id": "EV-AUTO-0005",
+      "requirement_id": "REQ-MET-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.080972Z",
+      "details": {
+        "message": "bwr=[1.2409809821480884, 1.650545160378515, 7.115868264773935, 17.31896686453276]"
+      }
+    },
+    {
+      "id": "EV-AUTO-0006",
+      "requirement_id": "REQ-MET-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.080978Z",
+      "details": {
+        "message": "fill_rates=[0.635, 0.67, 0.615, 0.82]"
+      }
+    },
+    {
+      "id": "EV-AUTO-0007",
+      "requirement_id": "REQ-MET-003",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.080983Z",
+      "details": {
+        "message": "total=4738.7907, sum=4738.7907, diff=0.00e+00"
+      }
+    },
+    {
+      "id": "EV-AUTO-0008",
+      "requirement_id": "REQ-MET-004",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.081006Z",
+      "details": {
+        "message": "nsamp=6.972574"
+      }
+    },
+    {
+      "id": "EV-AUTO-0009",
+      "requirement_id": "REQ-COST-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.081012Z",
+      "details": {
+        "message": "h(10)=10.0, b(-10)=50.0, z(0)=0.0"
+      }
+    },
+    {
+      "id": "EV-AUTO-0010",
+      "requirement_id": "REQ-COST-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.081023Z",
+      "details": {
+        "message": "costs=[100.0, 50.0, 25.0, 0.0, 5.0, 10.0, 20.0]"
+      }
+    },
+    {
+      "id": "EV-AUTO-0011",
+      "requirement_id": "REQ-POL-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.081115Z",
+      "details": {
+        "message": "All built-in policies return non-negative orders"
+      }
+    },
+    {
+      "id": "EV-AUTO-0012",
+      "requirement_id": "REQ-POL-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.087820Z",
+      "details": {
+        "message": "max_steady_state_deviation=0.000000"
+      }
+    },
+    {
+      "id": "EV-AUTO-0013",
+      "requirement_id": "REQ-DEM-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.088123Z",
+      "details": {
+        "message": "All generators produce non-negative demand"
+      }
+    },
+    {
+      "id": "EV-AUTO-0014",
+      "requirement_id": "REQ-DEM-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.088365Z",
+      "details": {
+        "message": "mean_demand=29.81"
+      }
+    },
+    {
+      "id": "EV-AUTO-0015",
+      "requirement_id": "REQ-FOR-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.088459Z",
+      "details": {
+        "message": "All forecasters return (mean, std) with std >= 0"
+      }
+    },
+    {
+      "id": "EV-AUTO-0016",
+      "requirement_id": "REQ-FOR-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.088488Z",
+      "details": {
+        "message": "ma_forecast=101.800000, expected=101.800000"
+      }
+    },
+    {
+      "id": "EV-AUTO-0017",
+      "requirement_id": "REQ-VEC-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.092278Z",
+      "details": {
+        "message": "serial_bwr_ok=True, vec_bwr_ok=True, serial_cost=1719.62, vec_cost=192282.07"
+      }
+    },
+    {
+      "id": "EV-AUTO-0018",
+      "requirement_id": "REQ-VEC-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.127527Z",
+      "details": {
+        "message": "min_cost=3947.7511"
+      }
+    },
+    {
+      "id": "EV-AUTO-0019",
+      "requirement_id": "REQ-VEC-003",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.127560Z",
+      "details": {
+        "message": "mean_metrics keys=['BW_1', 'cost_1', 'fill_rate_1', 'BW_2', 'cost_2', 'fill_rate_2', 'BW_3', 'cost_3', 'fill_rate_3', 'BW_4', 'cost_4', 'fill_rate_4', 'BW_cumulative', 'total_cost']"
+      }
+    },
+    {
+      "id": "EV-AUTO-0020",
+      "requirement_id": "REQ-BEN-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.167926Z",
+      "details": {
+        "message": "DataFrame shape=(32, 5)"
+      }
+    },
+    {
+      "id": "EV-AUTO-0021",
+      "requirement_id": "REQ-BEN-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.205532Z",
+      "details": {
+        "message": "csv=True, latex=True"
+      }
+    },
+    {
+      "id": "EV-AUTO-0022",
+      "requirement_id": "REQ-REG-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.205564Z",
+      "details": {
+        "message": "registered=True, error_on_unknown=True"
+      }
+    },
+    {
+      "id": "EV-AUTO-0023",
+      "requirement_id": "REQ-SCH-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.205768Z",
+      "details": {
+        "message": "orig=['Retailer', 'Wholesaler'], loaded=['Retailer', 'Wholesaler']"
+      }
+    },
+    {
+      "id": "EV-AUTO-0024",
+      "requirement_id": "REQ-NET-001",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.205781Z",
+      "details": {
+        "message": "Cyclic graph correctly rejected"
+      }
+    },
+    {
+      "id": "EV-AUTO-0025",
+      "requirement_id": "REQ-NET-002",
+      "kind": "test",
+      "verdict": "pass",
+      "artifact_uri": "",
+      "observed_at": "2026-04-17T19:31:55.206116Z",
+      "details": {
+        "message": "nodes=True, edges=True"
+      }
+    }
+  ],
+  "summary": {
+    "message": "DeepBullwhip V&V assessment"
+  },
+  "metadata": {},
+  "verdict_policy": "strict"
+}

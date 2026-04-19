@@ -64,7 +64,7 @@ class DCLPolicy(OrderingPolicy):
             device=device,
         )
 
-        self._pipeline: List[float] = [0.0] * self.config.pipeline_length
+        self._pipeline: list[float] = [0.0] * self.config.pipeline_length
         self._torch = None
         self._device = None
         self._net = None

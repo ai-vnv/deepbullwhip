@@ -62,7 +62,7 @@ class E2ENewsvendorPolicy(OrderingPolicy):
             device=device,
         )
 
-        self._hist: List[float] = []
+        self._hist: list[float] = []
         self._torch = None
         self._device = None
         self._net = None

@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e ".[docs,dev,network]"
+          pip install -e ".[docs,dev,vnv,network]"
 
       - name: Run V&V assessment
         run: python scripts/vnv_assess.py

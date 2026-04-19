@@ -66,7 +66,7 @@ For development:
 ```bash
 git clone https://github.com/ai-vnv/deepbullwhip.git
 cd deepbullwhip
-pip install -e ".[dev]"
+pip install -e ".[dev,vnv]"
 ```
 
 ### Dependencies

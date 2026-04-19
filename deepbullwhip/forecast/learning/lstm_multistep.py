@@ -19,7 +19,6 @@ forecaster runnable inside BenchmarkRunner without torch.
 
 from __future__ import annotations
 
-from typing import Optional
 
 import numpy as np
 

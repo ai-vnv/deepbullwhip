@@ -65,6 +65,8 @@ benchmark = [
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+]
+vnv = [
     "vnvspec",
     "typer>=0.9",
     "rich>=13.0",

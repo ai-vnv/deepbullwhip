@@ -21,7 +21,7 @@ def test_vnvspec_yaml_validates() -> None:
     """``vnvspec validate`` must succeed (same gate as CI ``vnv`` job)."""
     exe = shutil.which("vnvspec")
     if exe is None:
-        pytest.skip("vnvspec CLI not on PATH (install dev extras: pip install -e '.[dev]')")
+        pytest.skip("vnvspec CLI not on PATH (install vnv extras: pip install -e '.[vnv]')")
     proc = subprocess.run(
         [exe, "validate", str(_SPEC), "-v"],
         cwd=str(_REPO_ROOT),

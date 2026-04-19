@@ -16,7 +16,7 @@ remains importable without stable-baselines3.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any
 
 import numpy as np
 
@@ -26,7 +26,7 @@ from deepbullwhip.registry import register
 
 @dataclass
 class RecurrentPPOConfig:
-    model_path: Optional[str] = None
+    model_path: str | None = None
     state_window: int = 10
     action_scale: float = 1.0
     action_offset: float = 0.0
@@ -42,7 +42,7 @@ class RecurrentPPOPolicy(OrderingPolicy):
         lead_time: int = 2,
         service_level: float = 0.95,
         *,
-        model_path: Optional[str] = None,
+        model_path: str | None = None,
         state_window: int = 10,
         action_scale: float = 1.0,
         action_offset: float = 0.0,
@@ -61,7 +61,7 @@ class RecurrentPPOPolicy(OrderingPolicy):
         self._model = None
         self._lstm_state: Any = None
         self._episode_start = True
-        self._buf: List[np.ndarray] = []
+        self._buf: list[np.ndarray] = []
 
         if model_path is not None:
             self._load_model()

@@ -24,7 +24,6 @@ level).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
 
 import numpy as np
 
@@ -34,7 +33,7 @@ from deepbullwhip.registry import register
 
 @dataclass
 class E2ENewsvendorConfig:
-    checkpoint: Optional[str] = None
+    checkpoint: str | None = None
     feature_window: int = 10
     hidden_sizes: tuple = (128, 64)
     device: str = "cpu"
@@ -49,7 +48,7 @@ class E2ENewsvendorPolicy(OrderingPolicy):
         lead_time: int = 2,
         service_level: float = 0.95,
         *,
-        checkpoint: Optional[str] = None,
+        checkpoint: str | None = None,
         feature_window: int = 10,
         hidden_sizes: tuple = (128, 64),
         device: str = "cpu",

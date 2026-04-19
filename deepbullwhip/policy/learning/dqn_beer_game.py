@@ -30,7 +30,6 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Deque, List, Optional
 
 import numpy as np
 
@@ -40,11 +39,11 @@ from deepbullwhip.registry import register
 
 @dataclass
 class DQNBeerGameConfig:
-    action_offsets: List[int] = field(default_factory=lambda: [-2, -1, 0, 1, 2])
+    action_offsets: list[int] = field(default_factory=lambda: [-2, -1, 0, 1, 2])
     state_window: int = 5
     hidden_sizes: tuple = (180, 130, 61, 33)
     epsilon: float = 0.0
-    checkpoint: Optional[str] = None
+    checkpoint: str | None = None
     device: str = "cpu"
 
 
@@ -57,8 +56,8 @@ class DQNBeerGamePolicy(OrderingPolicy):
         lead_time: int = 2,
         service_level: float = 0.95,
         *,
-        checkpoint: Optional[str] = None,
-        action_offsets: Optional[List[int]] = None,
+        checkpoint: str | None = None,
+        action_offsets: list[int] | None = None,
         state_window: int = 5,
         hidden_sizes: tuple = (180, 130, 61, 33),
         epsilon: float = 0.0,
@@ -76,10 +75,10 @@ class DQNBeerGamePolicy(OrderingPolicy):
         )
 
         w = self.config.state_window
-        self._order_hist: Deque[float] = deque([0.0] * w, maxlen=w)
-        self._demand_hist: Deque[float] = deque([0.0] * w, maxlen=w)
-        self._shipment_hist: Deque[float] = deque([0.0] * w, maxlen=w)
-        self._inv_hist: Deque[float] = deque([0.0] * w, maxlen=w)
+        self._order_hist: deque[float] = deque([0.0] * w, maxlen=w)
+        self._demand_hist: deque[float] = deque([0.0] * w, maxlen=w)
+        self._shipment_hist: deque[float] = deque([0.0] * w, maxlen=w)
+        self._inv_hist: deque[float] = deque([0.0] * w, maxlen=w)
 
         self._torch = None
         self._device = None

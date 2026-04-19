@@ -19,7 +19,6 @@ registered and runnable in BenchmarkRunner.
 
 from __future__ import annotations
 
-from typing import Optional
 
 import numpy as np
 
@@ -35,7 +34,7 @@ class TFTForecaster(Forecaster):
         self,
         *,
         model=None,
-        dataset_params: Optional[dict] = None,
+        dataset_params: dict | None = None,
         context_length: int = 52,
         max_prediction_length: int = 1,
         alpha: float = 0.3,

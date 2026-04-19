@@ -21,7 +21,6 @@ principled to do inside BenchmarkRunner when weights are absent.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
 
 import numpy as np
 
@@ -31,7 +30,7 @@ from deepbullwhip.registry import register
 
 @dataclass
 class DCLConfig:
-    checkpoint: Optional[str] = None
+    checkpoint: str | None = None
     pipeline_length: int = 12
     action_cap: int = 60
     hidden_sizes: tuple = (128, 128, 128)
@@ -48,7 +47,7 @@ class DCLPolicy(OrderingPolicy):
         lead_time: int = 2,
         service_level: float = 0.95,
         *,
-        checkpoint: Optional[str] = None,
+        checkpoint: str | None = None,
         action_cap: int = 60,
         hidden_sizes: tuple = (128, 128, 128),
         base_stock_cap: float = 80.0,

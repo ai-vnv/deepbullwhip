@@ -50,7 +50,7 @@ class LightGBMQuantileForecaster(Forecaster):
 
         self._models = {}  # q -> LGBMRegressor
         self._last_fit_size: int = 0
-        self._lgb_available: Optional[bool] = None
+        self._lgb_available: bool | None = None
 
     # ------------------------------------------------------------------ API
     def forecast(

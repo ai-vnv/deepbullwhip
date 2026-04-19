@@ -134,6 +134,7 @@ omit = [
     "deepbullwhip/render/_graphviz.py",
     "deepbullwhip/policy/learning/*",
     "deepbullwhip/forecast/learning/*",
+    "deepbullwhip/forecast/deepar.py",
     "deepbullwhip/ext/__init__.py",
 ]
 

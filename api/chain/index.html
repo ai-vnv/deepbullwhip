@@ -1,0 +1,3223 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Multi-tier supply chain bullwhip effect simulator">
+      
+      
+      
+        <link rel="canonical" href="https://ai-vnv.github.io/deepbullwhip/api/chain/">
+      
+      
+        <link rel="prev" href="../cost/">
+      
+      
+        <link rel="next" href="../diagnostics/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Chain - DeepBullwhip</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#supply-chain" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="DeepBullwhip" class="md-header__button md-logo" aria-label="DeepBullwhip" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DeepBullwhip
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chain
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ai-vnv/deepbullwhip" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ai-vnv/deepbullwhip
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DeepBullwhip" class="md-nav__button md-logo" aria-label="DeepBullwhip" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    DeepBullwhip
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ai-vnv/deepbullwhip" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ai-vnv/deepbullwhip
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LEADERBOARD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Leaderboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demand/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demand
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chain
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chain
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.config.EchelonConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EchelonConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.config.default_semiconductor_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        default_semiconductor_config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.echelon.SupplyChainEchelon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SupplyChainEchelon
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SupplyChainEchelon">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.echelon.SupplyChainEchelon.reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.echelon.SupplyChainEchelon.step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        step
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.serial.SerialSupplyChain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SerialSupplyChain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SerialSupplyChain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.serial.SerialSupplyChain.from_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.serial.SerialSupplyChain.simulate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        simulate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.vectorized.VectorizedSupplyChain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VectorizedSupplyChain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VectorizedSupplyChain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.vectorized.VectorizedSupplyChain.simulate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        simulate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.vectorized.BatchSimulationResult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BatchSimulationResult
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BatchSimulationResult">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.vectorized.BatchSimulationResult.mean_metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mean_metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deepbullwhip.chain.vectorized.BatchSimulationResult.to_simulation_result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_simulation_result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../diagnostics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sensitivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sensitivity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/01-cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01: Supply Chain Cost
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/02-bullwhip/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02: Bullwhip Effect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notebooks/03-policies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03: Custom Policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="supply-chain">Supply Chain</h1>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="deepbullwhip.chain.config.EchelonConfig" class="doc doc-heading">
+            <code>deepbullwhip.chain.config.EchelonConfig</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Configuration for a single supply chain echelon.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>deepbullwhip/chain/config.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EchelonConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for a single supply chain echelon.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">lead_time</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">holding_cost</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">backorder_cost</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">depreciation_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">service_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="n">initial_inventory</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.0</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="deepbullwhip.chain.config.default_semiconductor_config" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">deepbullwhip</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">default_semiconductor_config</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Return the 4-echelon semiconductor config from the paper.</p>
+<p>Weekly depreciation derived from 15% quarterly value loss:
+    weekly_dep = 1 - (1 - 0.15) ** (1/13)</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/config.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">default_semiconductor_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">EchelonConfig</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the 4-echelon semiconductor config from the paper.</span>
+
+<span class="sd">    Weekly depreciation derived from 15% quarterly value loss:</span>
+<span class="sd">        weekly_dep = 1 - (1 - 0.15) ** (1/13)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weekly_dep</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.15</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">13</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">EchelonConfig</span><span class="p">(</span>
+            <span class="s2">&quot;Distributor&quot;</span><span class="p">,</span> <span class="n">lead_time</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">holding_cost</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+            <span class="n">backorder_cost</span><span class="o">=</span><span class="mf">0.60</span><span class="p">,</span> <span class="n">depreciation_rate</span><span class="o">=</span><span class="n">weekly_dep</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">EchelonConfig</span><span class="p">(</span>
+            <span class="s2">&quot;OSAT&quot;</span><span class="p">,</span> <span class="n">lead_time</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">holding_cost</span><span class="o">=</span><span class="mf">0.12</span><span class="p">,</span>
+            <span class="n">backorder_cost</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="n">depreciation_rate</span><span class="o">=</span><span class="n">weekly_dep</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">EchelonConfig</span><span class="p">(</span>
+            <span class="s2">&quot;Foundry&quot;</span><span class="p">,</span> <span class="n">lead_time</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">holding_cost</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span>
+            <span class="n">backorder_cost</span><span class="o">=</span><span class="mf">0.40</span><span class="p">,</span> <span class="n">depreciation_rate</span><span class="o">=</span><span class="n">weekly_dep</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">EchelonConfig</span><span class="p">(</span>
+            <span class="s2">&quot;Supplier&quot;</span><span class="p">,</span> <span class="n">lead_time</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">holding_cost</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+            <span class="n">backorder_cost</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">depreciation_rate</span><span class="o">=</span><span class="n">weekly_dep</span> <span class="o">*</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="deepbullwhip.chain.echelon.SupplyChainEchelon" class="doc doc-heading">
+            <code>deepbullwhip.chain.echelon.SupplyChainEchelon</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Single echelon in a serial supply chain.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Human-readable name (e.g. "Distributor").</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>lead_time</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Replenishment lead time in periods.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>policy</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="deepbullwhip.policy.base.OrderingPolicy" href="../policy/#deepbullwhip.policy.base.OrderingPolicy">OrderingPolicy</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The ordering policy (must already know its own lead_time).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>cost_fn</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="deepbullwhip.cost.base.CostFunction" href="../cost/#deepbullwhip.cost.base.CostFunction">CostFunction</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The per-period cost function.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>initial_inventory</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Starting on-hand inventory.</p>
+              </div>
+            </td>
+            <td>
+                  <code>50.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>deepbullwhip/chain/echelon.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SupplyChainEchelon</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single echelon in a serial supply chain.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Human-readable name (e.g. &quot;Distributor&quot;).</span>
+<span class="sd">    lead_time : int</span>
+<span class="sd">        Replenishment lead time in periods.</span>
+<span class="sd">    policy : OrderingPolicy</span>
+<span class="sd">        The ordering policy (must already know its own lead_time).</span>
+<span class="sd">    cost_fn : CostFunction</span>
+<span class="sd">        The per-period cost function.</span>
+<span class="sd">    initial_inventory : float</span>
+<span class="sd">        Starting on-hand inventory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">lead_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">policy</span><span class="p">:</span> <span class="n">OrderingPolicy</span><span class="p">,</span>
+        <span class="n">cost_fn</span><span class="p">:</span> <span class="n">CostFunction</span><span class="p">,</span>
+        <span class="n">initial_inventory</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lead_time</span> <span class="o">=</span> <span class="n">lead_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">policy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_fn</span> <span class="o">=</span> <span class="n">cost_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_inventory</span> <span class="o">=</span> <span class="n">initial_inventory</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory_levels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset state to initial conditions.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_inventory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lead_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orders</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory_levels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demand</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">forecast_mean</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">forecast_std</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute one period: receive, order, satisfy demand, compute cost.</span>
+
+<span class="sd">        Returns the order quantity placed this period.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Receive oldest pipeline order</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Inventory position = on-hand + pipeline</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="p">)</span>
+
+        <span class="c1"># Ordering decision (delegated to policy)</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">compute_order</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">forecast_mean</span><span class="p">,</span> <span class="n">forecast_std</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+        <span class="c1"># Satisfy demand</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">-=</span> <span class="n">demand</span>
+
+        <span class="c1"># Cost (delegated to cost function)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_fn</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">order</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">orders_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inventory_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory_levels</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">costs_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="deepbullwhip.chain.echelon.SupplyChainEchelon.reset" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">reset</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reset state to initial conditions.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/echelon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reset state to initial conditions.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_inventory</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lead_time</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">orders</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">inventory_levels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">costs</span> <span class="o">=</span> <span class="p">[]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="deepbullwhip.chain.echelon.SupplyChainEchelon.step" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">step</span><span class="p">(</span><span class="n">demand</span><span class="p">,</span> <span class="n">forecast_mean</span><span class="p">,</span> <span class="n">forecast_std</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Execute one period: receive, order, satisfy demand, compute cost.</p>
+<p>Returns the order quantity placed this period.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/echelon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demand</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">forecast_mean</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">forecast_std</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute one period: receive, order, satisfy demand, compute cost.</span>
+
+<span class="sd">    Returns the order quantity placed this period.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Receive oldest pipeline order</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Inventory position = on-hand + pipeline</span>
+    <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="p">)</span>
+
+    <span class="c1"># Ordering decision (delegated to policy)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">compute_order</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">forecast_mean</span><span class="p">,</span> <span class="n">forecast_std</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="c1"># Satisfy demand</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">inventory</span> <span class="o">-=</span> <span class="n">demand</span>
+
+    <span class="c1"># Cost (delegated to cost function)</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_fn</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">inventory_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">order</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="deepbullwhip.chain.serial.SerialSupplyChain" class="doc doc-heading">
+            <code>deepbullwhip.chain.serial.SerialSupplyChain</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>K-echelon serial supply chain.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>echelons</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="deepbullwhip.chain.echelon.SupplyChainEchelon" href="#deepbullwhip.chain.echelon.SupplyChainEchelon">SupplyChainEchelon</a>] or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pre-built echelons. If None, uses default_semiconductor_config().</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>deepbullwhip/chain/serial.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SerialSupplyChain</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;K-echelon serial supply chain.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    echelons : list[SupplyChainEchelon] or None</span>
+<span class="sd">        Pre-built echelons. If None, uses default_semiconductor_config().</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">echelons</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SupplyChainEchelon</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">echelons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">echelons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_config</span><span class="p">(</span><span class="n">default_semiconductor_config</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span> <span class="o">=</span> <span class="n">echelons</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">echelons</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_config</span><span class="p">(</span><span class="n">configs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EchelonConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SupplyChainEchelon</span><span class="p">]:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cfg</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
+            <span class="n">total_h</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">holding_cost</span> <span class="o">+</span> <span class="n">cfg</span><span class="o">.</span><span class="n">depreciation_rate</span>
+            <span class="n">policy</span> <span class="o">=</span> <span class="n">OrderUpToPolicy</span><span class="p">(</span>
+                <span class="n">lead_time</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">lead_time</span><span class="p">,</span> <span class="n">service_level</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">service_level</span>
+            <span class="p">)</span>
+            <span class="n">cost_fn</span> <span class="o">=</span> <span class="n">NewsvendorCost</span><span class="p">(</span>
+                <span class="n">holding_cost</span><span class="o">=</span><span class="n">total_h</span><span class="p">,</span> <span class="n">backorder_cost</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">backorder_cost</span>
+            <span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">SupplyChainEchelon</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">lead_time</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">lead_time</span><span class="p">,</span>
+                    <span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span>
+                    <span class="n">cost_fn</span><span class="o">=</span><span class="n">cost_fn</span><span class="p">,</span>
+                    <span class="n">initial_inventory</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">initial_inventory</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">configs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EchelonConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SerialSupplyChain</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a chain from a list of EchelonConfig objects.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">echelons</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_from_config</span><span class="p">(</span><span class="n">configs</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">:</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">demand</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+        <span class="n">forecasts_mean</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+        <span class="n">forecasts_std</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the full simulation over T periods.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        demand : array, shape (T,)</span>
+<span class="sd">        forecasts_mean : array, shape (T,)</span>
+<span class="sd">            Point forecasts for echelon 1 (end-customer demand).</span>
+<span class="sd">        forecasts_std : array, shape (T,)</span>
+<span class="sd">            Forecast error std estimates for echelon 1.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SimulationResult</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">demand</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">fm</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">fs</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+
+            <span class="c1"># Echelon 1 faces end-customer demand</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">fm</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+
+            <span class="c1"># Each subsequent echelon faces orders from the previous</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">):</span>
+                <span class="n">upstream_demand</span> <span class="o">=</span> <span class="n">order</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">recent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">orders</span><span class="p">[</span>
+                        <span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">orders</span><span class="p">))</span> <span class="p">:</span>
+                    <span class="p">]</span>
+                    <span class="n">upstream_fm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">recent</span><span class="p">))</span>
+                    <span class="n">upstream_fs</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">recent</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">recent</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">fs</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">upstream_fm</span> <span class="o">=</span> <span class="n">fm</span>
+                    <span class="n">upstream_fs</span> <span class="o">=</span> <span class="n">fs</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">upstream_demand</span><span class="p">,</span> <span class="n">upstream_fm</span><span class="p">,</span> <span class="n">upstream_fs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_results</span><span class="p">(</span><span class="n">demand</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demand</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationResult</span><span class="p">:</span>
+        <span class="n">var_demand</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">demand</span><span class="p">))</span>
+        <span class="n">echelon_results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EchelonResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">):</span>
+            <span class="n">orders</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">orders_array</span>
+            <span class="n">inv</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">inventory_array</span>
+            <span class="n">costs</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">costs_array</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">bw</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">/</span> <span class="n">var_demand</span><span class="p">)</span> <span class="k">if</span> <span class="n">var_demand</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">var_prev</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">orders_array</span><span class="p">))</span>
+                <span class="n">bw</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">/</span> <span class="n">var_prev</span><span class="p">)</span> <span class="k">if</span> <span class="n">var_prev</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+
+            <span class="n">echelon_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">EchelonResult</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span>
+                    <span class="n">inventory_levels</span><span class="o">=</span><span class="n">inv</span><span class="p">,</span>
+                    <span class="n">costs</span><span class="o">=</span><span class="n">costs</span><span class="p">,</span>
+                    <span class="n">bullwhip_ratio</span><span class="o">=</span><span class="n">bw</span><span class="p">,</span>
+                    <span class="n">fill_rate</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">inv</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)),</span>
+                    <span class="n">total_cost</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">costs</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">all_orders_K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">orders_array</span>
+        <span class="n">cum_bw</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">all_orders_K</span><span class="p">)</span> <span class="o">/</span> <span class="n">var_demand</span><span class="p">)</span> <span class="k">if</span> <span class="n">var_demand</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="n">total_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">er</span><span class="o">.</span><span class="n">total_cost</span> <span class="k">for</span> <span class="n">er</span> <span class="ow">in</span> <span class="n">echelon_results</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SimulationResult</span><span class="p">(</span>
+            <span class="n">echelon_results</span><span class="o">=</span><span class="n">echelon_results</span><span class="p">,</span>
+            <span class="n">cumulative_bullwhip</span><span class="o">=</span><span class="n">cum_bw</span><span class="p">,</span>
+            <span class="n">total_cost</span><span class="o">=</span><span class="n">total_cost</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="deepbullwhip.chain.serial.SerialSupplyChain.from_config" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_config</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Build a chain from a list of EchelonConfig objects.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/serial.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">configs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EchelonConfig</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SerialSupplyChain</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a chain from a list of EchelonConfig objects.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">echelons</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_from_config</span><span class="p">(</span><span class="n">configs</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="deepbullwhip.chain.serial.SerialSupplyChain.simulate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">simulate</span><span class="p">(</span><span class="n">demand</span><span class="p">,</span> <span class="n">forecasts_mean</span><span class="p">,</span> <span class="n">forecasts_std</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Run the full simulation over T periods.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>demand</code>
+            </td>
+            <td>
+                  <code>(<span title="array">array</span>, <span title="shape">shape</span>(<span title="T">T</span>))</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>forecasts_mean</code>
+            </td>
+            <td>
+                  <code>(<span title="array">array</span>, <span title="shape">shape</span>(<span title="T">T</span>))</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Point forecasts for echelon 1 (end-customer demand).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>forecasts_std</code>
+            </td>
+            <td>
+                  <code>(<span title="array">array</span>, <span title="shape">shape</span>(<span title="T">T</span>))</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Forecast error std estimates for echelon 1.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="deepbullwhip._types.SimulationResult">SimulationResult</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/serial.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">demand</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">forecasts_mean</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">forecasts_std</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the full simulation over T periods.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    demand : array, shape (T,)</span>
+<span class="sd">    forecasts_mean : array, shape (T,)</span>
+<span class="sd">        Point forecasts for echelon 1 (end-customer demand).</span>
+<span class="sd">    forecasts_std : array, shape (T,)</span>
+<span class="sd">        Forecast error std estimates for echelon 1.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    SimulationResult</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">demand</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">fm</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+
+        <span class="c1"># Echelon 1 faces end-customer demand</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">fm</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+
+        <span class="c1"># Each subsequent echelon faces orders from the previous</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">):</span>
+            <span class="n">upstream_demand</span> <span class="o">=</span> <span class="n">order</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">recent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">orders</span><span class="p">[</span>
+                    <span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">orders</span><span class="p">))</span> <span class="p">:</span>
+                <span class="p">]</span>
+                <span class="n">upstream_fm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">recent</span><span class="p">))</span>
+                <span class="n">upstream_fs</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">recent</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">recent</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">fs</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">upstream_fm</span> <span class="o">=</span> <span class="n">fm</span>
+                <span class="n">upstream_fs</span> <span class="o">=</span> <span class="n">fs</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echelons</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">upstream_demand</span><span class="p">,</span> <span class="n">upstream_fm</span><span class="p">,</span> <span class="n">upstream_fs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_results</span><span class="p">(</span><span class="n">demand</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="deepbullwhip.chain.vectorized.VectorizedSupplyChain" class="doc doc-heading">
+            <code>deepbullwhip.chain.vectorized.VectorizedSupplyChain</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Matrix-based supply chain simulation for Monte Carlo batching.</p>
+<p>Instead of Python lists and per-element operations, this engine
+pre-allocates (N, K, T) arrays and uses NumPy broadcasting for all
+N paths simultaneously. The pipeline is implemented as a circular
+buffer with O(1) index arithmetic instead of O(L) list.pop(0).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>configs</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="deepbullwhip.chain.config.EchelonConfig
+
+
+  
+      dataclass
+  " href="#deepbullwhip.chain.config.EchelonConfig">EchelonConfig</a>] or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Echelon configurations. If None, uses default semiconductor config.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>deepbullwhip/chain/vectorized.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VectorizedSupplyChain</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matrix-based supply chain simulation for Monte Carlo batching.</span>
+
+<span class="sd">    Instead of Python lists and per-element operations, this engine</span>
+<span class="sd">    pre-allocates (N, K, T) arrays and uses NumPy broadcasting for all</span>
+<span class="sd">    N paths simultaneously. The pipeline is implemented as a circular</span>
+<span class="sd">    buffer with O(1) index arithmetic instead of O(L) list.pop(0).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    configs : list[EchelonConfig] or None</span>
+<span class="sd">        Echelon configurations. If None, uses default semiconductor config.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EchelonConfig</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">configs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">configs</span> <span class="o">=</span> <span class="n">default_semiconductor_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configs</span> <span class="o">=</span> <span class="n">configs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
+
+        <span class="c1"># Pre-compute per-echelon parameters as arrays for vectorized access</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lead_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">lead_time</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lead_times</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">holding_cost</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">depreciation_rate</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">backorder_cost</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">service_level</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">initial_inventory</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">demand</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">forecasts_mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">forecasts_std</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatchSimulationResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run vectorized simulation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        demand : array, shape (N, T) or (T,)</span>
+<span class="sd">            If 1-D, broadcast to all N paths (N=1).</span>
+<span class="sd">        forecasts_mean : array, shape (N, T) or (T,)</span>
+<span class="sd">        forecasts_std : array, shape (N, T) or (T,)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        BatchSimulationResult</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Normalize to 2-D</span>
+        <span class="k">if</span> <span class="n">demand</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">demand</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">forecasts_mean</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">forecasts_std</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">N</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">demand</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span>
+
+        <span class="c1"># ── Pre-allocate all matrices ────────────────────────────────</span>
+        <span class="n">orders</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+        <span class="n">costs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+
+        <span class="c1"># Pipeline: circular buffer (N, K, L_max)</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_max</span><span class="p">))</span>
+        <span class="c1"># On-hand inventory: (N, K)</span>
+        <span class="n">inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_inv</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># (N, K)</span>
+
+        <span class="c1"># Pipeline read pointer per echelon (wraps with %)</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># Lead time masks for circular buffer indexing</span>
+        <span class="c1"># lead_time_mask[k, l] = True if l &lt; lead_times[k]</span>
+        <span class="n">lead_time_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L_max</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lead_times</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># (K, L_max)</span>
+
+        <span class="c1"># ── Time loop (sequential — state dependency) ────────────────</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="c1"># --- Receive from pipeline: oldest order arrives ---</span>
+            <span class="c1"># For each echelon k, read pipeline[n, k, ptr[k]]</span>
+            <span class="n">incoming</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">ptr</span><span class="p">]</span>  <span class="c1"># (N, K)</span>
+            <span class="n">inv</span> <span class="o">+=</span> <span class="n">incoming</span>
+
+            <span class="c1"># --- Compute inventory position: on-hand + pipeline sum ---</span>
+            <span class="c1"># Mask out unused pipeline slots (beyond lead_time)</span>
+            <span class="n">pipeline_masked</span> <span class="o">=</span> <span class="n">pipeline</span> <span class="o">*</span> <span class="n">lead_time_mask</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>  <span class="c1"># (N, K, L_max)</span>
+            <span class="n">pipeline_sum</span> <span class="o">=</span> <span class="n">pipeline_masked</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># (N, K)</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="n">inv</span> <span class="o">+</span> <span class="n">pipeline_sum</span>  <span class="c1"># (N, K)</span>
+
+            <span class="c1"># --- Compute forecasts for each echelon ---</span>
+            <span class="c1"># Echelon 0: use provided forecasts</span>
+            <span class="c1"># Echelons 1..K-1: rolling mean/std of downstream orders (last 8)</span>
+            <span class="n">fm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+            <span class="n">fs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+            <span class="n">fm</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+            <span class="n">fs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">window</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+                    <span class="n">recent</span> <span class="o">=</span> <span class="n">orders</span><span class="p">[:,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t</span> <span class="o">-</span> <span class="n">window</span> <span class="p">:</span> <span class="n">t</span><span class="p">]</span>  <span class="c1"># (N, window)</span>
+                    <span class="n">fm</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">recent</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">fs</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">recent</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">window</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">forecasts_std</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fm</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[:,</span> <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">fs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[:,</span> <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># --- Order-Up-To policy (vectorized across N and K) ---</span>
+            <span class="n">L_plus_1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lead_times</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># (K,)</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">L_plus_1</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">fm</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">z_alpha</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">L_plus_1</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>  <span class="c1"># (N, K)</span>
+            <span class="n">order_qty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">S</span> <span class="o">-</span> <span class="n">ip</span><span class="p">)</span>  <span class="c1"># (N, K)</span>
+
+            <span class="c1"># --- Write order into pipeline at current pointer ---</span>
+            <span class="n">pipeline</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">ptr</span><span class="p">]</span> <span class="o">=</span> <span class="n">order_qty</span>
+            <span class="n">orders</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">order_qty</span>
+
+            <span class="c1"># --- Satisfy demand ---</span>
+            <span class="c1"># Echelon 0 faces customer demand; echelon k faces echelon k-1 orders</span>
+            <span class="n">echelon_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+            <span class="n">echelon_demand</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">K</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">echelon_demand</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">order_qty</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">inv</span> <span class="o">-=</span> <span class="n">echelon_demand</span>
+
+            <span class="c1"># --- Compute costs (newsvendor: h * inv+ + b * inv-) ---</span>
+            <span class="n">costs_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">inv</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">inv</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">inv</span><span class="p">))</span>
+            <span class="n">costs</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">costs_t</span>
+            <span class="n">inventory</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">inv</span>
+
+            <span class="c1"># --- Advance pipeline pointer (circular buffer) ---</span>
+            <span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_max</span>
+
+        <span class="c1"># ── Compute metrics (fully vectorized) ───────────────────────</span>
+        <span class="n">var_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">demand</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (N,)</span>
+
+        <span class="c1"># Variance of orders: (N, K)</span>
+        <span class="n">var_orders</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">orders</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Bullwhip ratios</span>
+        <span class="n">bullwhip_ratios</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+        <span class="n">safe_var_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">var_demand</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">var_demand</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">bullwhip_ratios</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">safe_var_demand</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+            <span class="n">safe_var_prev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">var_orders</span><span class="p">[:,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">bullwhip_ratios</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">safe_var_prev</span>
+
+        <span class="c1"># Fill rates: (N, K)</span>
+        <span class="n">fill_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">inventory</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Total costs: (N, K)</span>
+        <span class="n">total_costs</span> <span class="o">=</span> <span class="n">costs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Cumulative bullwhip: (N,)</span>
+        <span class="n">var_last</span> <span class="o">=</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">cumulative_bullwhip</span> <span class="o">=</span> <span class="n">var_last</span> <span class="o">/</span> <span class="n">safe_var_demand</span>
+
+        <span class="k">return</span> <span class="n">BatchSimulationResult</span><span class="p">(</span>
+            <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span>
+            <span class="n">inventory</span><span class="o">=</span><span class="n">inventory</span><span class="p">,</span>
+            <span class="n">costs</span><span class="o">=</span><span class="n">costs</span><span class="p">,</span>
+            <span class="n">bullwhip_ratios</span><span class="o">=</span><span class="n">bullwhip_ratios</span><span class="p">,</span>
+            <span class="n">fill_rates</span><span class="o">=</span><span class="n">fill_rates</span><span class="p">,</span>
+            <span class="n">total_costs</span><span class="o">=</span><span class="n">total_costs</span><span class="p">,</span>
+            <span class="n">cumulative_bullwhip</span><span class="o">=</span><span class="n">cumulative_bullwhip</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="deepbullwhip.chain.vectorized.VectorizedSupplyChain.simulate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">simulate</span><span class="p">(</span><span class="n">demand</span><span class="p">,</span> <span class="n">forecasts_mean</span><span class="p">,</span> <span class="n">forecasts_std</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Run vectorized simulation.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>demand</code>
+            </td>
+            <td>
+                  <code>(<span title="array">array</span>, <span title="shape">shape</span>(<span title="N">N</span>, <span title="T">T</span>) or (<span title="T">T</span>,))</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If 1-D, broadcast to all N paths (N=1).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>forecasts_mean</code>
+            </td>
+            <td>
+                  <code>(<span title="array">array</span>, <span title="shape">shape</span>(<span title="N">N</span>, <span title="T">T</span>) or (<span title="T">T</span>,))</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>forecasts_std</code>
+            </td>
+            <td>
+                  <code>(<span title="array">array</span>, <span title="shape">shape</span>(<span title="N">N</span>, <span title="T">T</span>) or (<span title="T">T</span>,))</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="deepbullwhip.chain.vectorized.BatchSimulationResult
+
+
+  
+      dataclass
+  " href="#deepbullwhip.chain.vectorized.BatchSimulationResult">BatchSimulationResult</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/vectorized.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">demand</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">forecasts_mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">forecasts_std</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatchSimulationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run vectorized simulation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    demand : array, shape (N, T) or (T,)</span>
+<span class="sd">        If 1-D, broadcast to all N paths (N=1).</span>
+<span class="sd">    forecasts_mean : array, shape (N, T) or (T,)</span>
+<span class="sd">    forecasts_std : array, shape (N, T) or (T,)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    BatchSimulationResult</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Normalize to 2-D</span>
+    <span class="k">if</span> <span class="n">demand</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">demand</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">forecasts_mean</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">forecasts_std</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="n">N</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">demand</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span>
+
+    <span class="c1"># ── Pre-allocate all matrices ────────────────────────────────</span>
+    <span class="n">orders</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+    <span class="n">inventory</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+    <span class="n">costs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+
+    <span class="c1"># Pipeline: circular buffer (N, K, L_max)</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_max</span><span class="p">))</span>
+    <span class="c1"># On-hand inventory: (N, K)</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_inv</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># (N, K)</span>
+
+    <span class="c1"># Pipeline read pointer per echelon (wraps with %)</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="c1"># Lead time masks for circular buffer indexing</span>
+    <span class="c1"># lead_time_mask[k, l] = True if l &lt; lead_times[k]</span>
+    <span class="n">lead_time_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L_max</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lead_times</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># (K, L_max)</span>
+
+    <span class="c1"># ── Time loop (sequential — state dependency) ────────────────</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="c1"># --- Receive from pipeline: oldest order arrives ---</span>
+        <span class="c1"># For each echelon k, read pipeline[n, k, ptr[k]]</span>
+        <span class="n">incoming</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">ptr</span><span class="p">]</span>  <span class="c1"># (N, K)</span>
+        <span class="n">inv</span> <span class="o">+=</span> <span class="n">incoming</span>
+
+        <span class="c1"># --- Compute inventory position: on-hand + pipeline sum ---</span>
+        <span class="c1"># Mask out unused pipeline slots (beyond lead_time)</span>
+        <span class="n">pipeline_masked</span> <span class="o">=</span> <span class="n">pipeline</span> <span class="o">*</span> <span class="n">lead_time_mask</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>  <span class="c1"># (N, K, L_max)</span>
+        <span class="n">pipeline_sum</span> <span class="o">=</span> <span class="n">pipeline_masked</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># (N, K)</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">inv</span> <span class="o">+</span> <span class="n">pipeline_sum</span>  <span class="c1"># (N, K)</span>
+
+        <span class="c1"># --- Compute forecasts for each echelon ---</span>
+        <span class="c1"># Echelon 0: use provided forecasts</span>
+        <span class="c1"># Echelons 1..K-1: rolling mean/std of downstream orders (last 8)</span>
+        <span class="n">fm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+        <span class="n">fm</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+        <span class="n">fs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+                <span class="n">recent</span> <span class="o">=</span> <span class="n">orders</span><span class="p">[:,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t</span> <span class="o">-</span> <span class="n">window</span> <span class="p">:</span> <span class="n">t</span><span class="p">]</span>  <span class="c1"># (N, window)</span>
+                <span class="n">fm</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">recent</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">fs</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">recent</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">window</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">forecasts_std</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fm</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">forecasts_mean</span><span class="p">[:,</span> <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">fs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">forecasts_std</span><span class="p">[:,</span> <span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># --- Order-Up-To policy (vectorized across N and K) ---</span>
+        <span class="n">L_plus_1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lead_times</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># (K,)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">L_plus_1</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">fm</span> <span class="o">+</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_alpha</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">L_plus_1</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="p">)</span>  <span class="c1"># (N, K)</span>
+        <span class="n">order_qty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">S</span> <span class="o">-</span> <span class="n">ip</span><span class="p">)</span>  <span class="c1"># (N, K)</span>
+
+        <span class="c1"># --- Write order into pipeline at current pointer ---</span>
+        <span class="n">pipeline</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">ptr</span><span class="p">]</span> <span class="o">=</span> <span class="n">order_qty</span>
+        <span class="n">orders</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">order_qty</span>
+
+        <span class="c1"># --- Satisfy demand ---</span>
+        <span class="c1"># Echelon 0 faces customer demand; echelon k faces echelon k-1 orders</span>
+        <span class="n">echelon_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+        <span class="n">echelon_demand</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">demand</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">K</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">echelon_demand</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">order_qty</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">inv</span> <span class="o">-=</span> <span class="n">echelon_demand</span>
+
+        <span class="c1"># --- Compute costs (newsvendor: h * inv+ + b * inv-) ---</span>
+        <span class="n">costs_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">inv</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">inv</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">inv</span><span class="p">))</span>
+        <span class="n">costs</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">costs_t</span>
+        <span class="n">inventory</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">inv</span>
+
+        <span class="c1"># --- Advance pipeline pointer (circular buffer) ---</span>
+        <span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="n">ptr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_max</span>
+
+    <span class="c1"># ── Compute metrics (fully vectorized) ───────────────────────</span>
+    <span class="n">var_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">demand</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (N,)</span>
+
+    <span class="c1"># Variance of orders: (N, K)</span>
+    <span class="n">var_orders</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">orders</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Bullwhip ratios</span>
+    <span class="n">bullwhip_ratios</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+    <span class="n">safe_var_demand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">var_demand</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">var_demand</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">bullwhip_ratios</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">safe_var_demand</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+        <span class="n">safe_var_prev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">var_orders</span><span class="p">[:,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">bullwhip_ratios</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">safe_var_prev</span>
+
+    <span class="c1"># Fill rates: (N, K)</span>
+    <span class="n">fill_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">inventory</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Total costs: (N, K)</span>
+    <span class="n">total_costs</span> <span class="o">=</span> <span class="n">costs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Cumulative bullwhip: (N,)</span>
+    <span class="n">var_last</span> <span class="o">=</span> <span class="n">var_orders</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">cumulative_bullwhip</span> <span class="o">=</span> <span class="n">var_last</span> <span class="o">/</span> <span class="n">safe_var_demand</span>
+
+    <span class="k">return</span> <span class="n">BatchSimulationResult</span><span class="p">(</span>
+        <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span>
+        <span class="n">inventory</span><span class="o">=</span><span class="n">inventory</span><span class="p">,</span>
+        <span class="n">costs</span><span class="o">=</span><span class="n">costs</span><span class="p">,</span>
+        <span class="n">bullwhip_ratios</span><span class="o">=</span><span class="n">bullwhip_ratios</span><span class="p">,</span>
+        <span class="n">fill_rates</span><span class="o">=</span><span class="n">fill_rates</span><span class="p">,</span>
+        <span class="n">total_costs</span><span class="o">=</span><span class="n">total_costs</span><span class="p">,</span>
+        <span class="n">cumulative_bullwhip</span><span class="o">=</span><span class="n">cumulative_bullwhip</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="deepbullwhip.chain.vectorized.BatchSimulationResult" class="doc doc-heading">
+            <code>deepbullwhip.chain.vectorized.BatchSimulationResult</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Results from a vectorized batch simulation.</p>
+<p>All arrays have a leading N (number of paths) dimension.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>deepbullwhip/chain/vectorized.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BatchSimulationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Results from a vectorized batch simulation.</span>
+
+<span class="sd">    All arrays have a leading N (number of paths) dimension.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">orders</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># (N, K, T)</span>
+    <span class="n">inventory</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>       <span class="c1"># (N, K, T)</span>
+    <span class="n">costs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>           <span class="c1"># (N, K, T)</span>
+    <span class="n">bullwhip_ratios</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="c1"># (N, K)</span>
+    <span class="n">fill_rates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># (N, K)</span>
+    <span class="n">total_costs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>     <span class="c1"># (N, K)</span>
+    <span class="n">cumulative_bullwhip</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>  <span class="c1"># (N,)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_echelons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_periods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Average metrics across all N paths.&quot;&quot;&quot;</span>
+        <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_echelons</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BW_</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bullwhip_ratios</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">d</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cost_</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">d</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;fill_rate_</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill_rates</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;BW_cumulative&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cumulative_bullwhip</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;total_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_simulation_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract a single path as a standard SimulationResult.&quot;&quot;&quot;</span>
+        <span class="n">echelon_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_echelons</span><span class="p">):</span>
+            <span class="n">echelon_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">EchelonResult</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;E</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">orders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                    <span class="n">inventory_levels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                    <span class="n">costs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                    <span class="n">bullwhip_ratio</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bullwhip_ratios</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">]),</span>
+                    <span class="n">fill_rate</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill_rates</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">]),</span>
+                    <span class="n">total_cost</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">SimulationResult</span><span class="p">(</span>
+            <span class="n">echelon_results</span><span class="o">=</span><span class="n">echelon_results</span><span class="p">,</span>
+            <span class="n">cumulative_bullwhip</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cumulative_bullwhip</span><span class="p">[</span><span class="n">path_index</span><span class="p">]),</span>
+            <span class="n">total_cost</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="p">[</span><span class="n">path_index</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="deepbullwhip.chain.vectorized.BatchSimulationResult.mean_metrics" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">mean_metrics</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Average metrics across all N paths.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/vectorized.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mean_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Average metrics across all N paths.&quot;&quot;&quot;</span>
+    <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_echelons</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+        <span class="n">d</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BW_</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bullwhip_ratios</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">d</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cost_</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">d</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;fill_rate_</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill_rates</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;BW_cumulative&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cumulative_bullwhip</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;total_cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">d</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="deepbullwhip.chain.vectorized.BatchSimulationResult.to_simulation_result" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">to_simulation_result</span><span class="p">(</span><span class="n">path_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Extract a single path as a standard SimulationResult.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>deepbullwhip/chain/vectorized.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_simulation_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract a single path as a standard SimulationResult.&quot;&quot;&quot;</span>
+    <span class="n">echelon_results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_echelons</span><span class="p">):</span>
+        <span class="n">echelon_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">EchelonResult</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;E</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">orders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">orders</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                <span class="n">inventory_levels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inventory</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                <span class="n">costs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                <span class="n">bullwhip_ratio</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bullwhip_ratios</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">]),</span>
+                <span class="n">fill_rate</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill_rates</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">]),</span>
+                <span class="n">total_cost</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="p">[</span><span class="n">path_index</span><span class="p">,</span> <span class="n">k</span><span class="p">]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">SimulationResult</span><span class="p">(</span>
+        <span class="n">echelon_results</span><span class="o">=</span><span class="n">echelon_results</span><span class="p">,</span>
+        <span class="n">cumulative_bullwhip</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cumulative_bullwhip</span><span class="p">[</span><span class="n">path_index</span><span class="p">]),</span>
+        <span class="n">total_cost</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_costs</span><span class="p">[</span><span class="n">path_index</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

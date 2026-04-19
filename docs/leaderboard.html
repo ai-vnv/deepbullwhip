@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Benchmark leaderboard</title>
+<style>
+body{font-family:system-ui,-apple-system,sans-serif;margin:12px;font-size:13px;color:#1a1a1a;line-height:1.35}
+h1{font-size:1.1rem;margin:0 0 6px;font-weight:600}
+.proto{font-family:ui-monospace,monospace;font-size:11px;color:#555;margin-bottom:10px}
+fieldset{border:1px solid #ccc;border-radius:4px;margin:0 0 8px;padding:6px 8px;background:#fafafa}
+legend{font-size:11px;font-weight:600;padding:0 4px}
+.chkrow{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:4px}
+.chkrow label{font-size:12px;white-space:nowrap;cursor:pointer;display:inline-flex;gap:4px;align-items:center}
+table{border-collapse:collapse;width:100%;margin-top:8px;font-size:12px}
+th,td{border:1px solid #ddd;padding:4px 7px}
+th{background:#eee;text-align:left;cursor:pointer;user-select:none;font-weight:600}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+th.num,td.num{text-align:right}
+tr:nth-child(even) td{background:#fcfcfc}
+.hidden{display:none}
+.toolbar{margin:6px 0;font-size:11px}
+.toolbar button{font-size:11px;margin-right:6px;padding:2px 8px;cursor:pointer;border:1px solid #bbb;border-radius:3px;background:#fff}
+</style>
+</head>
+<body>
+<h1>Benchmark leaderboard</h1>
+<div class="proto" id="proto"></div>
+
+<fieldset><legend>Demand</legend><div class="chkrow" id="demands"></div></fieldset>
+<fieldset><legend>Policy</legend><div class="chkrow" id="policies"></div></fieldset>
+<fieldset><legend>Forecaster</legend><div class="chkrow" id="forecasters"></div></fieldset>
+<fieldset><legend>Metrics</legend><div class="chkrow" id="metrics"></div></fieldset>
+
+<div class="toolbar">
+<button type="button" id="btn-all">All filters on</button>
+<button type="button" id="btn-def">Defaults (metrics)</button>
+</div>
+
+<table id="tbl">
+<thead><tr id="headrow"></tr></thead>
+<tbody id="body"></tbody>
+</table>
+
+<script id="lb-data" type="application/json">{"rows":[{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"deepar","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"exponential_smoothing","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"lightgbm_quantile","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"lstm_multistep","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"moving_average","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"naive","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"nbeats","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"constant_order","forecaster":"tft","BWR":0.0,"CUM_BWR":0.0,"DampingRatio":null,"ExpectedShortfall":49.506578947368425,"FILL_RATE":0.02564102564102565,"InventoryTurnover":1396.4298279335476,"NSAmp":17.417073465105247,"OSR":0.0,"PeakBWR":0.0,"RFU":0.0,"TC":2261.5295318444732},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"deepar","BWR":57.88367329343759,"CUM_BWR":57.88367329343759,"DampingRatio":null,"ExpectedShortfall":57.76204594934059,"FILL_RATE":0.7600576923076923,"InventoryTurnover":8.800821445680052,"NSAmp":1093.2480405089673,"OSR":17.276281583728377,"PeakBWR":718.5121279007961,"RFU":39.31666031686685,"TC":1303.4753727787115},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"exponential_smoothing","BWR":71.91229521971178,"CUM_BWR":71.91229521971178,"DampingRatio":null,"ExpectedShortfall":65.31359987746372,"FILL_RATE":0.7886923076923076,"InventoryTurnover":6.727471242866396,"NSAmp":1469.7571249117238,"OSR":23.16469876954894,"PeakBWR":803.432666366005,"RFU":47.15474918890786,"TC":1504.3029640780398},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"lightgbm_quantile","BWR":57.88367329343759,"CUM_BWR":57.88367329343759,"DampingRatio":null,"ExpectedShortfall":57.76204594934059,"FILL_RATE":0.7600576923076923,"InventoryTurnover":8.800821445680052,"NSAmp":1093.2480405089673,"OSR":17.276281583728377,"PeakBWR":718.5121279007961,"RFU":39.31666031686685,"TC":1303.4753727787115},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"lstm_multistep","BWR":85.67360791594032,"CUM_BWR":85.67360791594032,"DampingRatio":null,"ExpectedShortfall":76.85312649718361,"FILL_RATE":0.8054294871794873,"InventoryTurnover":4.7704180106766705,"NSAmp":2617.46883801426,"OSR":31.092031485694555,"PeakBWR":953.2223439360372,"RFU":55.11001681348983,"TC":1929.426763996134},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"moving_average","BWR":74.12233088352015,"CUM_BWR":74.12233088352015,"DampingRatio":null,"ExpectedShortfall":67.67262054333426,"FILL_RATE":0.7888846153846155,"InventoryTurnover":6.612738736489633,"NSAmp":1534.4058796505835,"OSR":22.87850316973815,"PeakBWR":821.2423576183133,"RFU":47.72869417130267,"TC":1543.5306546780118},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"naive","BWR":57.88367329343759,"CUM_BWR":57.88367329343759,"DampingRatio":null,"ExpectedShortfall":57.76204594934059,"FILL_RATE":0.7600576923076923,"InventoryTurnover":8.800821445680052,"NSAmp":1093.2480405089673,"OSR":17.276281583728377,"PeakBWR":718.5121279007961,"RFU":39.31666031686685,"TC":1303.4753727787115},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"nbeats","BWR":87.95586528065068,"CUM_BWR":87.95586528065068,"DampingRatio":null,"ExpectedShortfall":91.35564336520194,"FILL_RATE":0.8111025641025642,"InventoryTurnover":4.387103976279381,"NSAmp":3300.73595430997,"OSR":25.76122638957566,"PeakBWR":1076.710820231989,"RFU":55.00629070404737,"TC":2129.5258053879684},{"demand":"semiconductor_ar1","policy":"dcl","forecaster":"tft","BWR":79.37787128649815,"CUM_BWR":79.37787128649815,"DampingRatio":null,"ExpectedShortfall":71.43771252528059,"FILL_RATE":0.79875,"InventoryTurnover":5.735407801008734,"NSAmp":1932.5430948035423,"OSR":24.742420148647124,"PeakBWR":898.5935013231225,"RFU":50.76588960490612,"TC":1687.0959289810662},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"deepar","BWR":428.4204733486095,"CUM_BWR":428.4204733486095,"DampingRatio":null,"ExpectedShortfall":62.67281018077882,"FILL_RATE":0.8010641025641025,"InventoryTurnover":4.874791746457263,"NSAmp":3199.8131388399993,"OSR":759.7483324134333,"PeakBWR":12706.171360084292,"RFU":428.8910334006587,"TC":1739.9145133277157},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"exponential_smoothing","BWR":444.13414725428845,"CUM_BWR":444.13414725428845,"DampingRatio":null,"ExpectedShortfall":71.12190409849195,"FILL_RATE":0.8260512820512821,"InventoryTurnover":4.260400136557293,"NSAmp":3190.2632965698604,"OSR":766.7322993340377,"PeakBWR":12705.841931064524,"RFU":437.8025645580229,"TC":1907.47950748483},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"lightgbm_quantile","BWR":428.4204733486095,"CUM_BWR":428.4204733486095,"DampingRatio":null,"ExpectedShortfall":62.67281018077882,"FILL_RATE":0.8010641025641025,"InventoryTurnover":4.874791746457263,"NSAmp":3199.8131388399993,"OSR":759.7483324134333,"PeakBWR":12706.171360084292,"RFU":428.8910334006587,"TC":1739.9145133277157},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"lstm_multistep","BWR":470.85156636626897,"CUM_BWR":470.85156636626897,"DampingRatio":null,"ExpectedShortfall":83.95127674894142,"FILL_RATE":0.8414615384615385,"InventoryTurnover":3.487617489692487,"NSAmp":3704.0084894983866,"OSR":788.8728780943068,"PeakBWR":12707.032952600575,"RFU":450.8287388584757,"TC":2269.976175141233},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"moving_average","BWR":448.11493848930763,"CUM_BWR":448.11493848930763,"DampingRatio":null,"ExpectedShortfall":73.38318382874897,"FILL_RATE":0.827647435897436,"InventoryTurnover":4.148877424382541,"NSAmp":3258.738068524143,"OSR":767.2078004833255,"PeakBWR":12705.853149875133,"RFU":438.9790270204994,"TC":1957.6522302325247},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"naive","BWR":428.4204733486095,"CUM_BWR":428.4204733486095,"DampingRatio":null,"ExpectedShortfall":62.67281018077882,"FILL_RATE":0.8010641025641025,"InventoryTurnover":4.874791746457263,"NSAmp":3199.8131388399993,"OSR":759.7483324134333,"PeakBWR":12706.171360084292,"RFU":428.8910334006587,"TC":1739.9145133277157},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"nbeats","BWR":619.81359025924,"CUM_BWR":619.81359025924,"DampingRatio":null,"ExpectedShortfall":118.56305030790335,"FILL_RATE":0.8544102564102564,"InventoryTurnover":3.0896037509413374,"NSAmp":9619.466951731874,"OSR":1003.4006081908615,"PeakBWR":17982.943274834557,"RFU":528.9278852412194,"TC":3204.345334641935},{"demand":"semiconductor_ar1","policy":"dqn_beer_game","forecaster":"tft","BWR":451.39847904941394,"CUM_BWR":451.39847904941394,"DampingRatio":null,"ExpectedShortfall":77.99505967863213,"FILL_RATE":0.833173076923077,"InventoryTurnover":3.993190401515766,"NSAmp":3365.655997470535,"OSR":767.6322644781503,"PeakBWR":12741.296777704258,"RFU":442.5219688669217,"TC":2035.8159555209286},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"deepar","BWR":198.04513062826834,"CUM_BWR":198.04513062826834,"DampingRatio":null,"ExpectedShortfall":89.61235586490437,"FILL_RATE":0.7941794871794872,"InventoryTurnover":5.533283807409545,"NSAmp":2875.141681449072,"OSR":199.88094977138832,"PeakBWR":5310.967961397016,"RFU":182.67731235583884,"TC":1909.1948604807812},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"exponential_smoothing","BWR":205.12760696774413,"CUM_BWR":205.12760696774413,"DampingRatio":null,"ExpectedShortfall":102.72767654086844,"FILL_RATE":0.8121602564102564,"InventoryTurnover":4.8274402799459715,"NSAmp":3107.6397045194785,"OSR":193.32945757419125,"PeakBWR":5076.088717148861,"RFU":182.38643083662086,"TC":2116.261121144959},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"lightgbm_quantile","BWR":198.04513062826834,"CUM_BWR":198.04513062826834,"DampingRatio":null,"ExpectedShortfall":89.61235586490437,"FILL_RATE":0.7941794871794872,"InventoryTurnover":5.533283807409545,"NSAmp":2875.141681449072,"OSR":199.88094977138832,"PeakBWR":5310.967961397016,"RFU":182.67731235583884,"TC":1909.1948604807812},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"lstm_multistep","BWR":199.79969787777898,"CUM_BWR":199.79969787777898,"DampingRatio":null,"ExpectedShortfall":100.37979585643141,"FILL_RATE":0.8086794871794873,"InventoryTurnover":4.7811610745022355,"NSAmp":2972.616409457693,"OSR":188.50375602841353,"PeakBWR":4907.09238501418,"RFU":177.43517154964334,"TC":2113.9895333344984},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"moving_average","BWR":192.74144043085133,"CUM_BWR":192.74144043085133,"DampingRatio":null,"ExpectedShortfall":103.35791395690167,"FILL_RATE":0.8085384615384615,"InventoryTurnover":4.888303102726398,"NSAmp":2897.701632727488,"OSR":179.06296317566185,"PeakBWR":4616.271695026328,"RFU":169.21103998047712,"TC":2118.9953544867785},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"naive","BWR":198.014154040631,"CUM_BWR":198.014154040631,"DampingRatio":null,"ExpectedShortfall":89.60059145273057,"FILL_RATE":0.7941538461538462,"InventoryTurnover":5.534156967714897,"NSAmp":2874.4696069895144,"OSR":199.8508795234374,"PeakBWR":5309.502442258388,"RFU":182.64822025458594,"TC":1909.029041110227},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"nbeats","BWR":296.7540924223266,"CUM_BWR":296.7540924223266,"DampingRatio":null,"ExpectedShortfall":119.46884414683201,"FILL_RATE":0.8312051282051282,"InventoryTurnover":3.536852981405298,"NSAmp":5999.11642639746,"OSR":258.20850173639474,"PeakBWR":7736.503399260871,"RFU":257.2309374338033,"TC":2684.2312704016367},{"demand":"semiconductor_ar1","policy":"e2e_newsvendor","forecaster":"tft","BWR":215.04415396040926,"CUM_BWR":215.04415396040926,"DampingRatio":null,"ExpectedShortfall":106.88540895904694,"FILL_RATE":0.8171794871794873,"InventoryTurnover":4.52127414420056,"NSAmp":3397.445072734149,"OSR":198.3862024341211,"PeakBWR":5266.990046233763,"RFU":189.31808969502717,"TC":2217.6901492556754},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"deepar","BWR":428.39475787904314,"CUM_BWR":428.39475787904314,"DampingRatio":null,"ExpectedShortfall":62.670387451593676,"FILL_RATE":0.801051282051282,"InventoryTurnover":4.875085311641413,"NSAmp":3199.5515794279554,"OSR":759.6984780753502,"PeakBWR":12705.367307965693,"RFU":428.86493189429666,"TC":1739.8581065996416},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"exponential_smoothing","BWR":444.1079163627575,"CUM_BWR":444.1079163627575,"DampingRatio":null,"ExpectedShortfall":71.11754604752245,"FILL_RATE":0.8260384615384615,"InventoryTurnover":4.260642711844519,"NSAmp":3190.028079261615,"OSR":766.6819876543653,"PeakBWR":12705.037764023242,"RFU":437.7761922606401,"TC":1907.4171318867825},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"lightgbm_quantile","BWR":428.39475787904314,"CUM_BWR":428.39475787904314,"DampingRatio":null,"ExpectedShortfall":62.670387451593676,"FILL_RATE":0.801051282051282,"InventoryTurnover":4.875085311641413,"NSAmp":3199.5515794279554,"OSR":759.6984780753502,"PeakBWR":12705.367307965693,"RFU":428.86493189429666,"TC":1739.8581065996416},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"lstm_multistep","BWR":470.8217690479076,"CUM_BWR":470.8217690479076,"DampingRatio":null,"ExpectedShortfall":83.95070025381321,"FILL_RATE":0.8414551282051281,"InventoryTurnover":3.48784221009915,"NSAmp":3703.7303152414224,"OSR":788.8198718558347,"PeakBWR":12706.224554405102,"RFU":450.8007287322948,"TC":2269.8754619032843},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"moving_average","BWR":448.0879666192282,"CUM_BWR":448.0879666192282,"DampingRatio":null,"ExpectedShortfall":73.384944403063,"FILL_RATE":0.827647435897436,"InventoryTurnover":4.149129299350912,"NSAmp":3258.501027504337,"OSR":767.1571716114848,"PeakBWR":12705.049052776796,"RFU":438.9522330862276,"TC":1957.5837313522031},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"naive","BWR":428.39475787904314,"CUM_BWR":428.39475787904314,"DampingRatio":null,"ExpectedShortfall":62.670387451593676,"FILL_RATE":0.801051282051282,"InventoryTurnover":4.875085311641413,"NSAmp":3199.5515794279554,"OSR":759.6984780753502,"PeakBWR":12705.367307965693,"RFU":428.86493189429666,"TC":1739.8581065996416},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"nbeats","BWR":619.6987317623048,"CUM_BWR":619.6987317623048,"DampingRatio":null,"ExpectedShortfall":118.52908484497586,"FILL_RATE":0.8543910256410256,"InventoryTurnover":3.0899521014954754,"NSAmp":9616.814484251823,"OSR":1003.2131363734171,"PeakBWR":17979.216436446757,"RFU":528.8532939649468,"TC":3203.853032033395},{"demand":"semiconductor_ar1","policy":"order_up_to","forecaster":"tft","BWR":451.37130097213213,"CUM_BWR":451.37130097213213,"DampingRatio":null,"ExpectedShortfall":77.99177146265757,"FILL_RATE":0.8331666666666666,"InventoryTurnover":3.993423884075838,"NSAmp":3365.3753881415987,"OSR":767.582405422475,"PeakBWR":12740.46573381802,"RFU":442.4951212872044,"TC":2035.7401281816678},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"deepar","BWR":47.366859746503785,"CUM_BWR":47.366859746503785,"DampingRatio":null,"ExpectedShortfall":44.853493774058705,"FILL_RATE":0.6416794871794872,"InventoryTurnover":15.492870131051228,"NSAmp":669.3955830710129,"OSR":32.86445633816774,"PeakBWR":835.3516763112674,"RFU":35.77324300618691,"TC":1123.4647959548113},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"exponential_smoothing","BWR":55.59925195843482,"CUM_BWR":55.59925195843482,"DampingRatio":null,"ExpectedShortfall":49.8068204211034,"FILL_RATE":0.6778397435897436,"InventoryTurnover":11.977318035871512,"NSAmp":885.127765471183,"OSR":34.34624414774213,"PeakBWR":878.4070146474592,"RFU":39.43183303635279,"TC":1231.8795085035151},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"lightgbm_quantile","BWR":47.366859746503785,"CUM_BWR":47.366859746503785,"DampingRatio":null,"ExpectedShortfall":44.853493774058705,"FILL_RATE":0.6416794871794872,"InventoryTurnover":15.492870131051228,"NSAmp":669.3955830710129,"OSR":32.86445633816774,"PeakBWR":835.3516763112674,"RFU":35.77324300618691,"TC":1123.4647959548113},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"lstm_multistep","BWR":58.03984471551374,"CUM_BWR":58.03984471551374,"DampingRatio":null,"ExpectedShortfall":52.56420832774708,"FILL_RATE":0.6776410256410257,"InventoryTurnover":10.579893682082325,"NSAmp":1122.0366729469245,"OSR":34.4914476744034,"PeakBWR":909.9606270368675,"RFU":39.768625840457,"TC":1347.4425910233192},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"moving_average","BWR":57.515760201433224,"CUM_BWR":57.515760201433224,"DampingRatio":null,"ExpectedShortfall":51.73884530974557,"FILL_RATE":0.6861217948717949,"InventoryTurnover":11.522788825124255,"NSAmp":930.1845531595281,"OSR":34.54646802367072,"PeakBWR":880.2029468448786,"RFU":39.93460011188228,"TC":1260.1555548038743},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"naive","BWR":47.366859746503785,"CUM_BWR":47.366859746503785,"DampingRatio":null,"ExpectedShortfall":44.853493774058705,"FILL_RATE":0.6416794871794872,"InventoryTurnover":15.492870131051228,"NSAmp":669.3955830710129,"OSR":32.86445633816774,"PeakBWR":835.3516763112674,"RFU":35.77324300618691,"TC":1123.4647959548113},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"nbeats","BWR":62.78262237857893,"CUM_BWR":62.78262237857893,"DampingRatio":null,"ExpectedShortfall":52.59965506048982,"FILL_RATE":0.6906987179487181,"InventoryTurnover":9.60568863282528,"NSAmp":1210.9947894413688,"OSR":35.95709585808265,"PeakBWR":952.2191735612212,"RFU":42.79976489704383,"TC":1367.0795026393253},{"demand":"semiconductor_ar1","policy":"proportional_out","forecaster":"tft","BWR":60.22439609905376,"CUM_BWR":60.22439609905376,"DampingRatio":null,"ExpectedShortfall":53.325184578284535,"FILL_RATE":0.6965064102564101,"InventoryTurnover":10.301435545704084,"NSAmp":1117.5102543869862,"OSR":35.1214517900316,"PeakBWR":910.6129991169776,"RFU":41.14281318517559,"TC":1326.0681063857685},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"deepar","BWR":47.368031489829356,"CUM_BWR":47.368031489829356,"DampingRatio":null,"ExpectedShortfall":44.85548072296231,"FILL_RATE":0.6417051282051282,"InventoryTurnover":15.492469338698735,"NSAmp":669.3934247513428,"OSR":32.86649402798736,"PeakBWR":835.38414315906,"RFU":35.774804806526824,"TC":1123.4430997180098},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"exponential_smoothing","BWR":55.600498551911286,"CUM_BWR":55.600498551911286,"DampingRatio":null,"ExpectedShortfall":49.80792547112677,"FILL_RATE":0.6778589743589744,"InventoryTurnover":11.97702382390847,"NSAmp":885.1232770041988,"OSR":34.34832027093286,"PeakBWR":878.43843942363,"RFU":39.43342594461747,"TC":1231.8574097080389},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"lightgbm_quantile","BWR":47.368031489829356,"CUM_BWR":47.368031489829356,"DampingRatio":null,"ExpectedShortfall":44.85548072296231,"FILL_RATE":0.6417051282051282,"InventoryTurnover":15.492469338698735,"NSAmp":669.3934247513428,"OSR":32.86649402798736,"PeakBWR":835.38414315906,"RFU":35.774804806526824,"TC":1123.4430997180098},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"lstm_multistep","BWR":58.04150928648552,"CUM_BWR":58.04150928648552,"DampingRatio":null,"ExpectedShortfall":52.56129468561823,"FILL_RATE":0.6776346153846153,"InventoryTurnover":10.579562450569451,"NSAmp":1122.0514785851203,"OSR":34.493591110401425,"PeakBWR":909.9978984855546,"RFU":39.77037874162488,"TC":1347.4292559694438},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"moving_average","BWR":57.51726135266471,"CUM_BWR":57.51726135266471,"DampingRatio":null,"ExpectedShortfall":51.73647052704783,"FILL_RATE":0.6861217948717949,"InventoryTurnover":11.522458746558964,"NSAmp":930.1860607969297,"OSR":34.548607103352914,"PeakBWR":880.2351950699668,"RFU":39.93632618186733,"TC":1260.1353373505679},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"naive","BWR":47.368031489829356,"CUM_BWR":47.368031489829356,"DampingRatio":null,"ExpectedShortfall":44.85548072296231,"FILL_RATE":0.6417051282051282,"InventoryTurnover":15.492469338698735,"NSAmp":669.3934247513428,"OSR":32.86649402798736,"PeakBWR":835.38414315906,"RFU":35.774804806526824,"TC":1123.4430997180098},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"nbeats","BWR":62.78411441632218,"CUM_BWR":62.78411441632218,"DampingRatio":null,"ExpectedShortfall":52.597333207783485,"FILL_RATE":0.6906987179487181,"InventoryTurnover":9.605377483441892,"NSAmp":1211.0115273821484,"OSR":35.95925076015883,"PeakBWR":952.2552625208975,"RFU":42.80137491165521,"TC":1367.0660871270265},{"demand":"semiconductor_ar1","policy":"recurrent_ppo","forecaster":"tft","BWR":60.225871616526454,"CUM_BWR":60.225871616526454,"DampingRatio":null,"ExpectedShortfall":53.32485113177686,"FILL_RATE":0.6965192307692307,"InventoryTurnover":10.301105518525791,"NSAmp":1117.5223085243815,"OSR":35.12357745902441,"PeakBWR":910.6463107995625,"RFU":41.14444141357337,"TC":1326.054212203923},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"deepar","BWR":258.81518426269645,"CUM_BWR":258.81518426269645,"DampingRatio":-0.8803511995975789,"ExpectedShortfall":82.06417153396566,"FILL_RATE":0.88275,"InventoryTurnover":1.6849048254863606,"NSAmp":13108.195798010873,"OSR":65.37612780234804,"PeakBWR":5224.97858990314,"RFU":213.50104709115712,"TC":4033.6213623613926},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"exponential_smoothing","BWR":307.36626182934407,"CUM_BWR":307.36626182934407,"DampingRatio":-0.8796491342533528,"ExpectedShortfall":95.31802537980651,"FILL_RATE":0.8894615384615384,"InventoryTurnover":1.4966197702653503,"NSAmp":14066.415384858074,"OSR":78.36876868106853,"PeakBWR":6002.480640882142,"RFU":254.14612342778887,"TC":4480.811288842896},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"lightgbm_quantile","BWR":258.81518426269645,"CUM_BWR":258.81518426269645,"DampingRatio":-0.8803511995975789,"ExpectedShortfall":82.06417153396566,"FILL_RATE":0.88275,"InventoryTurnover":1.6849048254863606,"NSAmp":13108.195798010873,"OSR":65.37612780234804,"PeakBWR":5224.97858990314,"RFU":213.50104709115712,"TC":4033.6213623613926},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"lstm_multistep","BWR":317.99054068209733,"CUM_BWR":317.99054068209733,"DampingRatio":-0.8801258823599822,"ExpectedShortfall":93.76551519192974,"FILL_RATE":0.8898717948717948,"InventoryTurnover":1.4110482741243635,"NSAmp":15683.634204443844,"OSR":81.03952845788494,"PeakBWR":6356.334643856201,"RFU":262.6719542965267,"TC":4733.711412643559},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"moving_average","BWR":313.49235357605096,"CUM_BWR":313.49235357605096,"DampingRatio":-0.8795737096594914,"ExpectedShortfall":97.88077599048522,"FILL_RATE":0.8896474358974358,"InventoryTurnover":1.5052387839530728,"NSAmp":13694.052367348364,"OSR":80.31483290680792,"PeakBWR":5985.162133767364,"RFU":258.12643149368387,"TC":4461.337484247917},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"naive","BWR":258.81660395410665,"CUM_BWR":258.81660395410665,"DampingRatio":-0.8803574849604663,"ExpectedShortfall":82.06247871735411,"FILL_RATE":0.8827564102564103,"InventoryTurnover":1.6848556276539088,"NSAmp":13108.913986127041,"OSR":65.37346778219934,"PeakBWR":5225.099447266275,"RFU":213.49557165395498,"TC":4033.679970825076},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"nbeats","BWR":348.25794946825954,"CUM_BWR":348.25794946825954,"DampingRatio":-0.8803855497200049,"ExpectedShortfall":108.45293422020765,"FILL_RATE":0.8949807692307693,"InventoryTurnover":1.3936945277806623,"NSAmp":16462.299148603503,"OSR":87.7171711848077,"PeakBWR":6904.579779665801,"RFU":286.20539652095135,"TC":4928.330309377796},{"demand":"semiconductor_ar1","policy":"smoothing_out","forecaster":"tft","BWR":334.6117914372334,"CUM_BWR":334.6117914372334,"DampingRatio":-0.8788763278659862,"ExpectedShortfall":103.85968144955397,"FILL_RATE":0.8928653846153847,"InventoryTurnover":1.4303752481996552,"NSAmp":15431.672924477809,"OSR":86.03913464357422,"PeakBWR":6485.351535420012,"RFU":276.09518856495504,"TC":4781.177882319942}],"dims":{"demands":["semiconductor_ar1"],"policies":["constant_order","dcl","dqn_beer_game","e2e_newsvendor","order_up_to","proportional_out","recurrent_ppo","smoothing_out"],"forecasters":["deepar","exponential_smoothing","lightgbm_quantile","lstm_multistep","moving_average","naive","nbeats","tft"]},"metrics":["BWR","CUM_BWR","DampingRatio","ExpectedShortfall","FILL_RATE","InventoryTurnover","NSAmp","OSR","PeakBWR","RFU","TC"],"labels":{"BWR":"BWR","CUM_BWR":"Cum. BWR","DampingRatio":"Damping","ExpectedShortfall":"Exp. shortfall","FILL_RATE":"Fill rate","InventoryTurnover":"Inv. turnover","NSAmp":"NS amp.","OSR":"OSR","PeakBWR":"Peak BWR","RFU":"RFU","TC":"Total cost"},"defaults":{"demands":["semiconductor_ar1"],"policies":["constant_order","dcl","dqn_beer_game","e2e_newsvendor","order_up_to","proportional_out","recurrent_ppo","smoothing_out"],"forecasters":["deepar","exponential_smoothing","lightgbm_quantile","lstm_multistep","moving_average","naive","nbeats","tft"],"metrics":["BWR","CUM_BWR","FILL_RATE","TC"]},"protocol":{"chain":"semiconductor_4tier","T":156,"N":1000,"seed":966,"echelon":"E4 (max upstream in table)"}}</script>
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById("lb-data").textContent);
+  const proto = document.getElementById("proto");
+  const p = DATA.protocol;
+  proto.textContent = "chain=" + p.chain + " | T=" + p.T + " | N=" + p.N + " | seed=" + p.seed + " | " + p.echelon;
+
+  const state = { d: {}, p: {}, f: {}, m: {} };
+  let sortKey = "TC";
+  let sortAsc = true;
+
+  function mkGroup(containerId, items, key, defList) {
+    const el = document.getElementById(containerId);
+    const defSet = new Set(defList && defList.length ? defList : items);
+    items.forEach(function (name) {
+      const id = key + "_" + name.replace(/[^a-zA-Z0-9_]/g, "_");
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "checkbox";
+      inp.id = id;
+      inp.checked = defSet.has(name);
+      inp.addEventListener("change", render);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(name));
+      el.appendChild(lab);
+      state[key][name] = inp;
+    });
+  }
+
+  mkGroup("demands", DATA.dims.demands, "d", DATA.defaults.demands);
+  mkGroup("policies", DATA.dims.policies, "p", DATA.defaults.policies);
+  mkGroup("forecasters", DATA.dims.forecasters, "f", DATA.defaults.forecasters);
+  mkGroup("metrics", DATA.metrics, "m", DATA.defaults.metrics);
+
+  function checkedList(key) {
+    return Object.keys(state[key]).filter(function (k) { return state[key][k].checked; });
+  }
+
+  function fmtCell(metric, val) {
+    if (val === null || val === undefined) return "—";
+    if (val === "inf") return "∞";
+    if (val === "-inf") return "−∞";
+    if (metric === "FILL_RATE" && typeof val === "number")
+      return (100 * val).toFixed(1) + "%";
+    if (typeof val === "number")
+      return val.toLocaleString(undefined, { maximumFractionDigits: 1 });
+    return String(val);
+  }
+
+  function parseSort(metric, cellText) {
+    if (metric === "demand" || metric === "policy" || metric === "forecaster")
+      return cellText;
+    if (cellText === "—" || cellText === "∞" || cellText === "−∞") return NaN;
+    return parseFloat(String(cellText).replace(/,/g, "").replace("%", ""));
+  }
+
+  function cmpRows(a, b, key, asc) {
+    let v;
+    if (key === "demand" || key === "policy" || key === "forecaster") {
+      v = String(a[key]).localeCompare(String(b[key]));
+    } else {
+      const na = parseSort(key, fmtCell(key, a[key]));
+      const nb = parseSort(key, fmtCell(key, b[key]));
+      v = (isNaN(na) ? (isNaN(nb) ? 0 : 1) : (isNaN(nb) ? -1 : na - nb));
+    }
+    return asc ? v : -v;
+  }
+
+  function render() {
+    const ds = new Set(checkedList("d"));
+    const ps = new Set(checkedList("p"));
+    const fs = new Set(checkedList("f"));
+    const ms = checkedList("m");
+
+    const head = document.getElementById("headrow");
+    head.innerHTML = "";
+    const cols = ["demand", "policy", "forecaster"].concat(ms);
+    cols.forEach(function (col) {
+      const th = document.createElement("th");
+      th.textContent = (col === "demand" || col === "policy" || col === "forecaster")
+        ? col
+        : (DATA.labels[col] || col);
+      if (col !== "demand" && col !== "policy" && col !== "forecaster") th.className = "num";
+      th.dataset.sortKey = col;
+      if (col === sortKey) th.dataset.dir = sortAsc ? "asc" : "desc";
+      th.addEventListener("click", function () {
+        if (sortKey === col) sortAsc = !sortAsc;
+        else { sortKey = col; sortAsc = true; }
+        render();
+      });
+      head.appendChild(th);
+    });
+
+    let rows = DATA.rows.filter(function (r) {
+      return ds.has(r.demand) && ps.has(r.policy) && fs.has(r.forecaster);
+    });
+    rows = rows.slice().sort(function (a, b) { return cmpRows(a, b, sortKey, sortAsc); });
+
+    const body = document.getElementById("body");
+    body.innerHTML = "";
+    rows.forEach(function (r) {
+      const tr = document.createElement("tr");
+      ["demand", "policy", "forecaster"].forEach(function (c) {
+        const td = document.createElement("td");
+        td.textContent = r[c];
+        tr.appendChild(td);
+      });
+      ms.forEach(function (m) {
+        const td = document.createElement("td");
+        td.className = "num";
+        td.textContent = fmtCell(m, r[m]);
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  document.getElementById("btn-all").addEventListener("click", function () {
+    ["d", "p", "f", "m"].forEach(function (k) {
+      Object.keys(state[k]).forEach(function (name) { state[k][name].checked = true; });
+    });
+    render();
+  });
+  document.getElementById("btn-def").addEventListener("click", function () {
+    Object.keys(state.d).forEach(function (n) {
+      state.d[n].checked = DATA.defaults.demands.indexOf(n) >= 0;
+    });
+    Object.keys(state.p).forEach(function (n) { state.p[n].checked = true; });
+    Object.keys(state.f).forEach(function (n) { state.f[n].checked = true; });
+    Object.keys(state.m).forEach(function (n) {
+      state.m[n].checked = DATA.defaults.metrics.indexOf(n) >= 0;
+    });
+    sortKey = "TC";
+    sortAsc = true;
+    render();
+  });
+
+  if (DATA.defaults.metrics.indexOf("TC") < 0) sortKey = "demand";
+  render();
+})();
+</script>
+</body>
+</html>

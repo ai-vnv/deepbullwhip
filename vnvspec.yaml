@@ -1,5 +1,5 @@
 name: deepbullwhip
-version: "0.4.1"
+version: "0.5.0"
 description: >
   Verification & Validation specification for DeepBullwhip, a multi-tier
   supply chain bullwhip effect simulator. Covers simulation correctness,
@@ -336,4 +336,113 @@ requirements:
     verification_method: test
     acceptance_criteria:
       - "Round-trip conversion preserves all nodes, all edges."
+    priority: high
+
+  # ── Learning extensions (deepbullwhip.ext) ───────────────────────────
+  - id: REQ-EXT-001
+    statement: >
+      The system shall register four learning-side ordering policy names
+      with the decorator-based registry when users import the
+      deepbullwhip.ext subpackage.
+    rationale: >
+      Users rely on stable registry names to compose benchmarks and
+      reproducible studies with published RL and deep inventory policies.
+    verification_method: test
+    acceptance_criteria:
+      - "The names dqn_beer_game, recurrent_ppo, dcl, e2e_newsvendor appear in list_registered(\"policy\") after importing deepbullwhip.ext."
+    priority: high
+
+  - id: REQ-EXT-002
+    statement: >
+      The system shall register four learning-side forecaster names with
+      the decorator-based registry when users import the deepbullwhip.ext
+      subpackage.
+    rationale: >
+      Neural and gradient-boosting forecasters extend the benchmark
+      surface while remaining discoverable by name.
+    verification_method: test
+    acceptance_criteria:
+      - "The names nbeats, tft, lightgbm_quantile, lstm_multistep appear in list_registered(\"forecaster\") after importing deepbullwhip.ext."
+    priority: high
+
+  - id: REQ-EXT-003
+    statement: >
+      The system shall register six extension metric names with the
+      decorator-based registry when users import the deepbullwhip.ext
+      subpackage.
+    rationale: >
+      Extended bullwhip and service KPIs must be selectable in
+      BenchmarkRunner like built-in metrics.
+    verification_method: test
+    acceptance_criteria:
+      - "The names RFU, OSR, PeakBWR, ExpectedShortfall, InventoryTurnover, DampingRatio appear in list_registered(\"metric\") after importing deepbullwhip.ext."
+    priority: high
+
+  - id: REQ-EXT-004
+    statement: >
+      The system shall emit non-negative finite floating-point order
+      quantities from the compute_order method for extension learning
+      policies constructed without external checkpoints on a fixed
+      numerical probe grid.
+    rationale: >
+      Fallback paths must satisfy the same physical ordering contract
+      as core policies when optional ML weights are absent.
+    verification_method: test
+    acceptance_criteria:
+      - "For each extension policy, compute_order returns finite values greater than or equal to zero on the probe grid."
+    priority: blocking
+
+  - id: REQ-EXT-005
+    statement: >
+      The system shall produce non-negative finite point forecasts
+      together with non-negative finite standard deviations from the
+      forecast method for every extension forecaster using a synthetic
+      demand history.
+    rationale: >
+      The point forecast together with its spread must remain valid when
+      optional neural libraries are absent.
+    verification_method: test
+    acceptance_criteria:
+      - "forecast returns finite mean greater than or equal to zero together with finite standard deviation greater than or equal to zero."
+    priority: blocking
+
+  - id: REQ-EXT-006
+    statement: >
+      The system shall produce finite non-negative rolling forecast mean
+      arrays together with matching standard-deviation arrays from
+      generate_forecasts for every extension forecaster given a synthetic
+      demand history.
+    rationale: >
+      Rolling forecast arrays feed safety-stock logic inside the simulator.
+    verification_method: test
+    acceptance_criteria:
+      - "generate_forecasts returns arrays matching demand length with finite non-negative entries."
+    priority: blocking
+
+  - id: REQ-EXT-007
+    statement: >
+      The system shall return a pandas DataFrame from BenchmarkRunner.run
+      whose row count equals the product of policy count times forecaster
+      count times echelon count times metric count for the reference
+      extension integration configuration.
+    rationale: >
+      End-to-end integration must match the combinatorial structure of the
+      Monte Carlo aggregation path.
+    verification_method: test
+    acceptance_criteria:
+      - "run() returns five policies times six forecasters times four echelons times eleven metrics rows for the reference configuration."
+    priority: high
+
+  - id: REQ-EXT-008
+    statement: >
+      The system shall leave missing metric values only on DampingRatio
+      rows for the reference extension integration run while keeping the
+      overall missing fraction below twenty percent.
+    rationale: >
+      DampingRatio may be undefined numerically; other metrics must remain
+      populated for dashboarding.
+    verification_method: test
+    acceptance_criteria:
+      - "value.isna() rows list only DampingRatio in the metric column."
+      - "Fewer than twenty percent of rows carry missing values."
     priority: high

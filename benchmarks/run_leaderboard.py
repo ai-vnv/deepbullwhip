@@ -1,413 +1,483 @@
 """
-Generate the official deepbullwhip benchmark leaderboard.
+Generate the benchmark leaderboard: one combined interactive HTML table.
 
 Usage:
-    python benchmarks/run_leaderboard.py [--output docs/LEADERBOARD.md] [--sort-by TC]
+    python benchmarks/run_leaderboard.py [--output docs/LEADERBOARD.md]
+    python benchmarks/run_leaderboard.py --demands all --policies all \\
+        --forecasters all --default-metrics BWR,CUM_BWR,FILL_RATE,TC
 
-This script discovers all registered components and runs them through
-a standardized benchmark protocol. Results are deterministic (seed=966).
+Writes ``leaderboard.html`` next to the markdown output (same directory)
+and a short ``LEADERBOARD.md`` that embeds it. The HTML page uses checklists
+to filter demand, policy, forecaster rows and metric columns; defaults match
+BenchmarkRunner's default metrics for column visibility.
 """
 
-import os
-os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+from __future__ import annotations
 
 import argparse
+import json
+import html as html_module
+import math
+import os
 import time
+from pathlib import Path
+from typing import Any
 
 import pandas as pd
+
+os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
 # Import all modules so @register decorators fire
 import deepbullwhip.demand  # noqa: F401
 import deepbullwhip.policy  # noqa: F401
 import deepbullwhip.forecast  # noqa: F401
 import deepbullwhip.metrics  # noqa: F401
-from deepbullwhip.registry import list_registered
+import deepbullwhip.ext  # noqa: F401
 from deepbullwhip.benchmark import BenchmarkRunner
+from deepbullwhip.registry import get_class, list_registered
 
-# ── Fixed benchmark protocol ─────────────────────────────────────────
+# ── Protocol defaults ──────────────────────────────────────────────────
 SEED = 966
 T = 156
 N = 1000
 CHAIN = "semiconductor_4tier"
-DEMAND = "semiconductor_ar1"
 
-# ── Human-readable column labels ─────────────────────────────────────
+# BenchmarkRunner.run(..., metrics=None) uses these four:
+DEFAULT_METRICS: list[str] = ["BWR", "CUM_BWR", "FILL_RATE", "TC"]
+
 METRIC_LABELS: dict[str, str] = {
+    "BWR": "BWR",
     "CUM_BWR": "Cum. BWR",
-    "FILL_RATE": "Fill Rate",
-    "TC": "Total Cost",
-    "NSAmp": "NS Amp.",
+    "FILL_RATE": "Fill rate",
+    "TC": "Total cost",
+    "NSAmp": "NS amp.",
+    "RFU": "RFU",
+    "OSR": "OSR",
+    "PeakBWR": "Peak BWR",
+    "ExpectedShortfall": "Exp. shortfall",
+    "InventoryTurnover": "Inv. turnover",
+    "DampingRatio": "Damping",
 }
 
-# ── Component metadata: contributor + reference ──────────────────────
-# Add an entry here when contributing a new component.
-COMPONENT_META: dict[str, dict[str, str]] = {
-    # Forecasters
-    "naive": {
-        "contributor": "M. Arief",
-        "reference": "",
-    },
-    "moving_average": {
-        "contributor": "M. Arief",
-        "reference": "",
-    },
-    "exponential_smoothing": {
-        "contributor": "M. Arief",
-        "reference": "",
-    },
-    "deepar": {
-        "contributor": "M. Arief",
-        "reference": '<a href="https://doi.org/10.1016/j.ijforecast.2019.07.001">Salinas et al. 2020</a>',
-    },
-    # Policies
-    "order_up_to": {
-        "contributor": "M. Arief",
-        "reference": '<a href="https://doi.org/10.1287/mnsc.46.3.436.12069">Chen et al. 2000</a>',
-    },
-    "proportional_out": {
-        "contributor": "M. Arief",
-        "reference": '<a href="https://doi.org/10.1080/0020754031000114743">Disney &amp; Towill 2003</a>',
-    },
-    "smoothing_out": {
-        "contributor": "M. Arief",
-        "reference": "",
-    },
-    "constant_order": {
-        "contributor": "M. Arief",
-        "reference": "",
-    },
-    # Demand generators
-    "semiconductor_ar1": {
-        "contributor": "M. Arief",
-        "reference": '<a href="https://www.wsts.org">WSTS</a>',
-    },
-    "beer_game": {
-        "contributor": "M. Arief",
-        "reference": '<a href="https://doi.org/10.1287/mnsc.35.3.321">Sterman 1989</a>',
-    },
-    "arma": {
-        "contributor": "M. Arief",
-        "reference": "",
-    },
-    "replay": {
-        "contributor": "M. Arief",
-        "reference": "",
-    },
-}
 
-RANK_BADGES = ["&#129351;", "&#129352;", "&#129353;"]  # gold, silver, bronze
-
-
-def _get_meta(name: str) -> tuple[str, str]:
-    """Return (contributor, reference) for a component name."""
-    meta = COMPONENT_META.get(name, {})
-    return meta.get("contributor", ""), meta.get("reference", "")
-
-
-def _col_label(col: str) -> str:
-    """Return human-readable label for a metric column."""
-    return METRIC_LABELS.get(col, col)
-
-
-def run_forecaster_sweep() -> pd.DataFrame:
-    """Sweep A: all forecasters under OUT policy."""
-    runner = BenchmarkRunner(CHAIN, DEMAND, T=T, N=N, seed=SEED)
-    forecasters = list_registered("forecaster")
-    results = runner.run(
-        policies=["order_up_to"],
-        forecasters=list(forecasters),
-        metrics=["CUM_BWR", "FILL_RATE", "TC"],
+def _benchmark_metric_names() -> list[str]:
+    """Metrics usable with BenchmarkRunner (have ``compute``)."""
+    return sorted(
+        n
+        for n in list_registered("metric")
+        if callable(getattr(get_class("metric", n), "compute", None))
     )
-    max_ech = results["echelon"].max()
-    e_top = results[results["echelon"] == max_ech]
-    return e_top.pivot_table(index="forecaster", columns="metric", values="value")
 
 
-def run_policy_sweep() -> pd.DataFrame:
-    """Sweep B: all policies under naive forecaster."""
-    runner = BenchmarkRunner(CHAIN, DEMAND, T=T, N=N, seed=SEED)
-    policies = list_registered("policy")
-    results = runner.run(
-        policies=list(policies),
-        forecasters=["naive"],
-        metrics=["CUM_BWR", "FILL_RATE", "TC", "NSAmp"],
-    )
-    max_ech = results["echelon"].max()
-    e_top = results[results["echelon"] == max_ech]
-    return e_top.pivot_table(index="policy", columns="metric", values="value")
+def _parse_dim(arg: str | None, universe: list[str], label: str) -> list[str]:
+    if arg is None or str(arg).strip().lower() == "all":
+        return list(universe)
+    out = [x.strip() for x in str(arg).split(",") if x.strip()]
+    bad = [x for x in out if x not in universe]
+    if bad:
+        raise SystemExit(f"Unknown {label} name(s): {bad}. Valid: {universe}")
+    return out
 
 
-def run_demand_sweep() -> pd.DataFrame:
-    """Sweep C: all demand generators under OUT + naive."""
-    demands = list_registered("demand")
-    rows = []
-    for dname in demands:
-        if dname == "replay":
-            continue  # skip replay -- requires external data
-        try:
-            runner = BenchmarkRunner(CHAIN, dname, T=T, N=N, seed=SEED)
-            results = runner.run(
-                policies=["order_up_to"],
-                forecasters=["naive"],
-                metrics=["CUM_BWR", "TC"],
-            )
-            max_ech = results["echelon"].max()
-            e_top = results[results["echelon"] == max_ech]
-            for _, row in e_top.iterrows():
-                rows.append({
-                    "demand": dname,
-                    "metric": row["metric"],
-                    "value": row["value"],
-                })
-        except Exception as e:
-            rows.append({"demand": dname, "metric": "error", "value": str(e)})
-    df = pd.DataFrame(rows)
-    if df.empty:
-        return df
-    return df.pivot_table(index="demand", columns="metric", values="value")
+def _parse_demands(arg: str | None) -> list[str]:
+    reg = [d for d in list_registered("demand") if d != "replay"]
+    return _parse_dim(arg, reg, "demand")
 
 
-def format_table(
+def _sanitize_json_value(v: Any) -> Any:
+    if v is None or isinstance(v, (str, int, bool)):
+        return v
+    if isinstance(v, float):
+        if math.isnan(v):
+            return None
+        if math.isinf(v):
+            return "inf" if v > 0 else "-inf"
+        return v
+    return v
+
+
+def build_combined_frame(
+    demands: list[str],
+    policies: list[str],
+    forecasters: list[str],
+    metrics: list[str],
+    *,
+    t: int,
+    n: int,
+    seed: int,
+) -> pd.DataFrame:
+    """Wide table: demand, policy, forecaster, <metric columns> at upstream echelon."""
+    parts: list[pd.DataFrame] = []
+    for d in demands:
+        runner = BenchmarkRunner(CHAIN, d, T=t, N=n, seed=seed)
+        long_df = runner.run(
+            policies=policies,
+            forecasters=forecasters,
+            metrics=metrics,
+        )
+        top = long_df["echelon"].max()
+        e_top = long_df[long_df["echelon"] == top]
+        wide = e_top.pivot_table(
+            index=["policy", "forecaster"],
+            columns="metric",
+            values="value",
+            aggfunc="first",
+        ).reset_index()
+        wide.insert(0, "demand", d)
+        parts.append(wide)
+    out = pd.concat(parts, ignore_index=True)
+    meta = ["demand", "policy", "forecaster"]
+    mcols = sorted([c for c in out.columns if c not in meta])
+    return out[meta + mcols]
+
+
+def render_interactive_html(
     df: pd.DataFrame,
-    title: str,
-    description: str,
-    sort_by: str = "TC",
-    ascending: bool = True,
+    *,
+    chain: str,
+    t: int,
+    n: int,
+    seed: int,
+    default_demands: list[str],
+    default_metrics: list[str],
 ) -> str:
-    """Convert DataFrame to a styled, sortable HTML table."""
-    if df.empty:
-        return f"### {title}\n\n_No results._\n"
+    records: list[dict[str, Any]] = []
+    for _, row in df.iterrows():
+        rec = {k: _sanitize_json_value(row[k]) for k in df.columns}
+        records.append(rec)
 
-    sort_col = sort_by if sort_by in df.columns else (
-        "TC" if "TC" in df.columns else df.columns[0]
-    )
-    df_sorted = df.sort_values(sort_col, ascending=ascending)
-    cols = df.columns.tolist()
+    demands = sorted(df["demand"].unique().tolist())
+    policies = sorted(df["policy"].unique().tolist())
+    forecasters = sorted(df["forecaster"].unique().tolist())
+    metric_cols = [c for c in df.columns if c not in ("demand", "policy", "forecaster")]
 
-    lines = []
-    lines.append(f'<h3>{title}</h3>')
-    lines.append(f'<p class="lb-desc">{description}</p>')
-    lines.append("")
-    lines.append('<table class="lb-table sortable">')
+    payload = {
+        "rows": records,
+        "dims": {"demands": demands, "policies": policies, "forecasters": forecasters},
+        "metrics": metric_cols,
+        "labels": {m: METRIC_LABELS.get(m, m) for m in metric_cols},
+        "defaults": {
+            "demands": [d for d in default_demands if d in demands],
+            "policies": policies,
+            "forecasters": forecasters,
+            "metrics": [m for m in default_metrics if m in metric_cols],
+        },
+        "protocol": {
+            "chain": chain,
+            "T": t,
+            "N": n,
+            "seed": seed,
+            "echelon": "E4 (max upstream in table)",
+        },
+        "initialSort": ("TC" if "TC" in metric_cols else (metric_cols[0] if metric_cols else "demand")),
+    }
+    json_txt = json.dumps(payload, separators=(",", ":"))
 
-    # Header
-    header = ['<th class="lb-rank">#</th>', '<th>Component</th>',
-              '<th>Contributor</th>', '<th>Reference</th>']
-    for c in cols:
-        header.append(f'<th class="lb-metric">{_col_label(c)} <span class="sort-icon"></span></th>')
-    lines.append('  <thead><tr>' + ''.join(header) + '</tr></thead>')
-
-    # Body
-    lines.append('  <tbody>')
-    for rank, (idx, row) in enumerate(df_sorted.iterrows()):
-        contributor, reference = _get_meta(str(idx))
-        badge = RANK_BADGES[rank] if rank < 3 else str(rank + 1)
-        ref_cell = f'<span class="lb-ref">{reference}</span>' if reference else '<span class="lb-ref lb-none">&mdash;</span>'
-        cells = [
-            f'<td class="lb-rank">{badge}</td>',
-            f'<td class="lb-name"><code>{idx}</code></td>',
-            f'<td>{contributor}</td>',
-            f'<td>{ref_cell}</td>',
-        ]
-        for c in cols:
-            v = row[c]
-            if isinstance(v, float):
-                if c == "FILL_RATE":
-                    cells.append(f'<td class="lb-metric">{v:.1%}</td>')
-                else:
-                    cells.append(f'<td class="lb-metric">{v:,.1f}</td>')
-            else:
-                cells.append(f'<td class="lb-metric">{v}</td>')
-        tr_class = ' class="lb-top3"' if rank < 3 else ""
-        lines.append(f'    <tr{tr_class}>' + ''.join(cells) + '</tr>')
-    lines.append('  </tbody>')
-    lines.append('</table>\n')
-
-    return "\n".join(lines)
-
-
-# ── Embedded styles + sortable JS ────────────────────────────────────
-
-LEADERBOARD_STYLES = """\
+    # Minimal single-file UI: checklists + one sortable table
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Benchmark leaderboard</title>
 <style>
-.lb-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9em;
-  margin: 1em 0 2em 0;
-}
-.lb-table thead {
-  background: var(--md-primary-fg-color, #006747);
-  color: #fff;
-}
-.lb-table th {
-  padding: 10px 14px;
-  text-align: left;
-  font-weight: 600;
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-}
-.lb-table th:hover {
-  background: var(--md-primary-fg-color--dark, #004d35);
-}
-.lb-table th .sort-icon::after { content: " \\2195"; font-size: 0.7em; opacity: 0.5; }
-.lb-table td {
-  padding: 8px 14px;
-  border-bottom: 1px solid #e0e0e0;
-}
-.lb-table tbody tr:hover {
-  background: var(--md-primary-fg-color--light, #e8f5f0);
-}
-.lb-table tr.lb-top3 {
-  font-weight: 500;
-}
-.lb-rank { text-align: center; width: 40px; }
-.lb-name code {
-  background: #f4f4f4;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 0.88em;
-}
-.lb-metric { text-align: right; font-variant-numeric: tabular-nums; }
-.lb-ref { font-size: 0.85em; }
-.lb-ref.lb-none { opacity: 0.3; }
-.lb-desc {
-  color: #666;
-  font-size: 0.9em;
-  margin: -0.5em 0 0.5em 0;
-}
-.lb-protocol {
-  background: #f8f9fa;
-  border-left: 3px solid var(--md-primary-fg-color, #006747);
-  padding: 12px 16px;
-  margin: 1em 0 2em 0;
-  font-size: 0.88em;
-  color: #555;
-  line-height: 1.6;
-}
-.lb-protocol code {
-  background: #eef;
-  padding: 1px 5px;
-  border-radius: 3px;
-}
+body{{font-family:system-ui,-apple-system,sans-serif;margin:12px;font-size:13px;color:#1a1a1a;line-height:1.35}}
+h1{{font-size:1.1rem;margin:0 0 6px;font-weight:600}}
+.proto{{font-family:ui-monospace,monospace;font-size:11px;color:#555;margin-bottom:10px}}
+fieldset{{border:1px solid #ccc;border-radius:4px;margin:0 0 8px;padding:6px 8px;background:#fafafa}}
+legend{{font-size:11px;font-weight:600;padding:0 4px}}
+.chkrow{{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:4px}}
+.chkrow label{{font-size:12px;white-space:nowrap;cursor:pointer;display:inline-flex;gap:4px;align-items:center}}
+table{{border-collapse:collapse;width:100%;margin-top:8px;font-size:12px}}
+th,td{{border:1px solid #ddd;padding:4px 7px}}
+th{{background:#eee;text-align:left;cursor:pointer;user-select:none;font-weight:600}}
+td.num{{text-align:right;font-variant-numeric:tabular-nums}}
+th.num,td.num{{text-align:right}}
+tr:nth-child(even) td{{background:#fcfcfc}}
+.hidden{{display:none}}
+.toolbar{{margin:6px 0;font-size:11px}}
+.toolbar button{{font-size:11px;margin-right:6px;padding:2px 8px;cursor:pointer;border:1px solid #bbb;border-radius:3px;background:#fff}}
 </style>
-"""
+</head>
+<body>
+<h1>Benchmark leaderboard</h1>
+<div class="proto" id="proto"></div>
 
-SORTABLE_JS = """\
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll("table.sortable th").forEach(function (th) {
-    th.addEventListener("click", function () {
-      var table = th.closest("table");
-      var tbody = table.querySelector("tbody");
-      var rows = Array.from(tbody.querySelectorAll("tr"));
-      var idx = Array.from(th.parentNode.children).indexOf(th);
-      var asc = th.dataset.sortDir !== "asc";
-      th.dataset.sortDir = asc ? "asc" : "desc";
-      // Reset other headers
-      th.parentNode.querySelectorAll("th").forEach(function(h) {
-        if (h !== th) delete h.dataset.sortDir;
-      });
-      rows.sort(function (a, b) {
-        var av = a.children[idx].textContent.replace(/,/g, "").replace(/%/g, "");
-        var bv = b.children[idx].textContent.replace(/,/g, "").replace(/%/g, "");
-        var an = parseFloat(av), bn = parseFloat(bv);
-        if (!isNaN(an) && !isNaN(bn)) return asc ? an - bn : bn - an;
-        return asc ? av.localeCompare(bv) : bv.localeCompare(av);
-      });
-      rows.forEach(function (r) { tbody.appendChild(r); });
-    });
-  });
-});
-</script>
-"""
+<fieldset><legend>Demand</legend><div class="chkrow" id="demands"></div></fieldset>
+<fieldset><legend>Policy</legend><div class="chkrow" id="policies"></div></fieldset>
+<fieldset><legend>Forecaster</legend><div class="chkrow" id="forecasters"></div></fieldset>
+<fieldset><legend>Metrics</legend><div class="chkrow" id="metrics"></div></fieldset>
 
-
-def main(output_path: str = "docs/LEADERBOARD.md", sort_by: str = "TC") -> None:
-    t_start = time.perf_counter()
-    sections = []
-
-    # Title
-    sections.append("# Benchmark Leaderboard\n")
-
-    # Protocol box
-    sections.append(LEADERBOARD_STYLES)
-    sections.append(f"""\
-<div class="lb-protocol">
-<strong>Benchmark protocol</strong><br>
-Chain: <code>{CHAIN}</code> &nbsp;|&nbsp;
-Demand: <code>{DEMAND}</code> &nbsp;|&nbsp;
-T={T} periods &nbsp;|&nbsp;
-N={N:,} Monte Carlo paths &nbsp;|&nbsp;
-Seed={SEED}<br>
-All results reported at the most upstream echelon (E4).
-Sorted by Total Cost (lower is better). Click any column header to re-sort.
+<div class="toolbar">
+<button type="button" id="btn-all">All filters on</button>
+<button type="button" id="btn-def">Defaults (metrics)</button>
 </div>
-""")
 
-    print("Running forecaster sweep...")
-    fc_df = run_forecaster_sweep()
-    sections.append(
-        format_table(
-            fc_df,
-            "Forecaster Leaderboard",
-            "Fixed policy: <code>order_up_to</code> &nbsp;|&nbsp; Fixed demand: <code>semiconductor_ar1</code>",
-            sort_by=sort_by,
+<table id="tbl">
+<thead><tr id="headrow"></tr></thead>
+<tbody id="body"></tbody>
+</table>
+
+<script id="lb-data" type="application/json">{json_txt}</script>
+<script>
+(function () {{
+  const DATA = JSON.parse(document.getElementById("lb-data").textContent);
+  const proto = document.getElementById("proto");
+  const p = DATA.protocol;
+  proto.textContent = "chain=" + p.chain + " | T=" + p.T + " | N=" + p.N + " | seed=" + p.seed + " | " + p.echelon;
+
+  const state = {{ d: {{}}, p: {{}}, f: {{}}, m: {{}} }};
+  let sortKey = DATA.initialSort || "demand";
+  let sortAsc = true;
+
+  function mkGroup(containerId, items, key, defList) {{
+    const el = document.getElementById(containerId);
+    const defSet = new Set(defList && defList.length ? defList : items);
+    items.forEach(function (name) {{
+      const id = key + "_" + name.replace(/[^a-zA-Z0-9_]/g, "_");
+      const lab = document.createElement("label");
+      const inp = document.createElement("input");
+      inp.type = "checkbox";
+      inp.id = id;
+      inp.checked = defSet.has(name);
+      inp.addEventListener("change", render);
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(name));
+      el.appendChild(lab);
+      state[key][name] = inp;
+    }});
+  }}
+
+  mkGroup("demands", DATA.dims.demands, "d", DATA.defaults.demands);
+  mkGroup("policies", DATA.dims.policies, "p", DATA.defaults.policies);
+  mkGroup("forecasters", DATA.dims.forecasters, "f", DATA.defaults.forecasters);
+  mkGroup("metrics", DATA.metrics, "m", DATA.defaults.metrics);
+
+  function checkedList(key) {{
+    return Object.keys(state[key]).filter(function (k) {{ return state[key][k].checked; }});
+  }}
+
+  function fmtCell(metric, val) {{
+    if (val === null || val === undefined) return "—";
+    if (val === "inf") return "∞";
+    if (val === "-inf") return "−∞";
+    if (metric === "FILL_RATE" && typeof val === "number")
+      return (100 * val).toFixed(1) + "%";
+    if (typeof val === "number")
+      return val.toLocaleString(undefined, {{ maximumFractionDigits: 1 }});
+    return String(val);
+  }}
+
+  function parseSort(metric, cellText) {{
+    if (metric === "demand" || metric === "policy" || metric === "forecaster")
+      return cellText;
+    if (cellText === "—" || cellText === "∞" || cellText === "−∞") return NaN;
+    return parseFloat(String(cellText).replace(/,/g, "").replace("%", ""));
+  }}
+
+  function cmpRows(a, b, key, asc) {{
+    let v;
+    if (key === "demand" || key === "policy" || key === "forecaster") {{
+      v = String(a[key]).localeCompare(String(b[key]));
+    }} else {{
+      const na = parseSort(key, fmtCell(key, a[key]));
+      const nb = parseSort(key, fmtCell(key, b[key]));
+      v = (isNaN(na) ? (isNaN(nb) ? 0 : 1) : (isNaN(nb) ? -1 : na - nb));
+    }}
+    return asc ? v : -v;
+  }}
+
+  function render() {{
+    const ds = new Set(checkedList("d"));
+    const ps = new Set(checkedList("p"));
+    const fs = new Set(checkedList("f"));
+    const ms = checkedList("m");
+
+    const head = document.getElementById("headrow");
+    head.innerHTML = "";
+    const cols = ["demand", "policy", "forecaster"].concat(ms);
+    cols.forEach(function (col) {{
+      const th = document.createElement("th");
+      th.textContent = (col === "demand" || col === "policy" || col === "forecaster")
+        ? col
+        : (DATA.labels[col] || col);
+      if (col !== "demand" && col !== "policy" && col !== "forecaster") th.className = "num";
+      th.dataset.sortKey = col;
+      if (col === sortKey) th.dataset.dir = sortAsc ? "asc" : "desc";
+      th.addEventListener("click", function () {{
+        if (sortKey === col) sortAsc = !sortAsc;
+        else {{ sortKey = col; sortAsc = true; }}
+        render();
+      }});
+      head.appendChild(th);
+    }});
+
+    let rows = DATA.rows.filter(function (r) {{
+      return ds.has(r.demand) && ps.has(r.policy) && fs.has(r.forecaster);
+    }});
+    rows = rows.slice().sort(function (a, b) {{ return cmpRows(a, b, sortKey, sortAsc); }});
+
+    const body = document.getElementById("body");
+    body.innerHTML = "";
+    rows.forEach(function (r) {{
+      const tr = document.createElement("tr");
+      ["demand", "policy", "forecaster"].forEach(function (c) {{
+        const td = document.createElement("td");
+        td.textContent = r[c];
+        tr.appendChild(td);
+      }});
+      ms.forEach(function (m) {{
+        const td = document.createElement("td");
+        td.className = "num";
+        td.textContent = fmtCell(m, r[m]);
+        tr.appendChild(td);
+      }});
+      body.appendChild(tr);
+    }});
+  }}
+
+  document.getElementById("btn-all").addEventListener("click", function () {{
+    ["d", "p", "f", "m"].forEach(function (k) {{
+      Object.keys(state[k]).forEach(function (name) {{ state[k][name].checked = true; }});
+    }});
+    render();
+  }});
+  document.getElementById("btn-def").addEventListener("click", function () {{
+    Object.keys(state.d).forEach(function (n) {{
+      state.d[n].checked = DATA.defaults.demands.indexOf(n) >= 0;
+    }});
+    Object.keys(state.p).forEach(function (n) {{ state.p[n].checked = true; }});
+    Object.keys(state.f).forEach(function (n) {{ state.f[n].checked = true; }});
+    Object.keys(state.m).forEach(function (n) {{
+      state.m[n].checked = DATA.defaults.metrics.indexOf(n) >= 0;
+    }});
+    sortKey = DATA.initialSort || "demand";
+    sortAsc = true;
+    render();
+  }});
+
+  render();
+}})();
+</script>
+</body>
+</html>
+"""
+
+
+def write_markdown_stub(md_path: Path, html_name: str) -> None:
+    """Short MkDocs page that embeds the interactive HTML."""
+    body = f"""# Benchmark Leaderboard
+
+One combined table: filter **demand**, **policy**, and **forecaster** rows and **metric** columns with the checklists. Default visible metrics match `BenchmarkRunner` defaults (`BWR`, `CUM_BWR`, `FILL_RATE`, `TC`). Regenerate with `benchmarks/run_leaderboard.py` (see `--help`).
+
+<iframe src="{html_module.escape(html_name)}" title="Benchmark leaderboard" width="100%" height="860" style="border:1px solid #ddd;border-radius:4px"></iframe>
+
+If the frame does not load, open [{html_name}]({html_name}) directly.
+"""
+    md_path.write_text(body, encoding="utf-8")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Generate combined interactive benchmark leaderboard (HTML + short MD).",
+    )
+    parser.add_argument(
+        "--output",
+        default="docs/LEADERBOARD.md",
+        help="Markdown output path; leaderboard.html is written alongside it.",
+    )
+    parser.add_argument("--T", type=int, default=T, help=f"periods (default {T})")
+    parser.add_argument("--N", type=int, default=N, help=f"Monte Carlo paths (default {N})")
+    parser.add_argument("--seed", type=int, default=SEED, help=f"seed (default {SEED})")
+    parser.add_argument(
+        "--demands",
+        default="semiconductor_ar1",
+        help="Comma-separated demand names, or 'all' (excludes replay). Default: semiconductor_ar1.",
+    )
+    parser.add_argument(
+        "--policies",
+        default="all",
+        help="Comma-separated policy names or 'all'.",
+    )
+    parser.add_argument(
+        "--forecasters",
+        default="all",
+        help="Comma-separated forecaster names or 'all'.",
+    )
+    parser.add_argument(
+        "--default-metrics",
+        default=",".join(DEFAULT_METRICS),
+        help="Comma-separated metrics checked on page load (subset of computed metrics).",
+    )
+    parser.add_argument(
+        "--compute-metrics",
+        default="all",
+        help="Comma-separated metrics to compute and embed, or 'all' (simulation-backed metrics only).",
+    )
+    args = parser.parse_args()
+
+    t_start = time.perf_counter()
+    out_md = Path(args.output)
+    html_name = "leaderboard.html"
+    out_html = out_md.with_name(html_name)
+
+    policies = _parse_dim(args.policies, list_registered("policy"), "policy")
+    forecasters = _parse_dim(args.forecasters, list_registered("forecaster"), "forecaster")
+    demands = _parse_demands(args.demands)
+    all_m = _benchmark_metric_names()
+    if str(args.compute_metrics).strip().lower() == "all":
+        metrics = all_m
+    else:
+        metrics = [x.strip() for x in str(args.compute_metrics).split(",") if x.strip()]
+        bad = [m for m in metrics if m not in all_m]
+        if bad:
+            raise SystemExit(f"--compute-metrics unknown: {bad}. Valid: {all_m}")
+    default_metrics = [
+        x.strip()
+        for x in str(args.default_metrics).split(",")
+        if x.strip()
+    ]
+    bad_m = [m for m in default_metrics if m not in metrics]
+    if bad_m:
+        raise SystemExit(
+            f"--default-metrics must be subset of computed metrics. Unknown: {bad_m}. "
+            f"Computed: {metrics}"
         )
+
+    if len(demands) == 1:
+        default_demands = [demands[0]]
+    else:
+        default_demands = [d for d in demands if d == "semiconductor_ar1"] or [demands[0]]
+
+    print(f"Demands={demands}  policies={len(policies)}  forecasters={len(forecasters)}  metrics={len(metrics)}")
+    print(f"Building combined table (T={args.T}, N={args.N})...")
+    df = build_combined_frame(
+        demands,
+        policies,
+        forecasters,
+        metrics,
+        t=args.T,
+        n=args.N,
+        seed=args.seed,
     )
 
-    print("Running policy sweep...")
-    pol_df = run_policy_sweep()
-    sections.append(
-        format_table(
-            pol_df,
-            "Policy Leaderboard",
-            "Fixed forecaster: <code>naive</code> &nbsp;|&nbsp; Fixed demand: <code>semiconductor_ar1</code>",
-            sort_by=sort_by,
-        )
+    html_doc = render_interactive_html(
+        df,
+        chain=CHAIN,
+        t=args.T,
+        n=args.N,
+        seed=args.seed,
+        default_demands=default_demands,
+        default_metrics=default_metrics,
     )
 
-    print("Running demand generator sweep...")
-    dem_df = run_demand_sweep()
-    sections.append(
-        format_table(
-            dem_df,
-            "Demand Generator Leaderboard",
-            "Fixed policy: <code>order_up_to</code> &nbsp;|&nbsp; Fixed forecaster: <code>naive</code>",
-            sort_by=sort_by,
-        )
-    )
-
-    # Footer
-    sections.append("""\
----
-
-<p style="font-size: 0.8em; color: #999; margin-top: 2em;">
-Auto-generated by <code>benchmarks/run_leaderboard.py</code>.
-To reproduce: <code>python benchmarks/run_leaderboard.py</code>
-</p>
-""")
-
-    sections.append(SORTABLE_JS)
-
-    md = "\n".join(sections)
-    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
-    with open(output_path, "w") as f:
-        f.write(md)
+    out_md.parent.mkdir(parents=True, exist_ok=True)
+    out_html.write_text(html_doc, encoding="utf-8")
+    write_markdown_stub(out_md, html_name)
 
     elapsed = time.perf_counter() - t_start
-    print(f"\nLeaderboard written to {output_path} ({elapsed:.1f}s)")
+    print(f"Wrote {out_html} and {out_md} ({elapsed:.1f}s)")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Generate the deepbullwhip benchmark leaderboard"
-    )
-    parser.add_argument("--output", default="docs/LEADERBOARD.md")
-    parser.add_argument(
-        "--sort-by", default="TC",
-        help="Column to sort tables by (default: TC)",
-    )
-    args = parser.parse_args()
-    main(args.output, sort_by=args.sort_by)
+    main()

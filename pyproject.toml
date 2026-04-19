@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "deepbullwhip"
-version = "0.4.1"
+version = "0.5.0"
 description = "Multi-tier supply chain bullwhip effect simulator"
 readme = "README.md"
 license = {text = "MIT"}
@@ -66,6 +66,11 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
 ]
+vnv = [
+    "vnvspec",
+    "typer>=0.9",
+    "rich>=13.0",
+]
 docs = [
     "mkdocs>=1.5",
     "mkdocs-material>=9.0",
@@ -80,6 +85,35 @@ all = [
     "gluonts[torch]>=0.14",
     "kaggle>=1.5",
     "tabulate>=0.9",
+    "lightgbm>=4.0",
+    "sb3-contrib>=2.0",
+    "stable-baselines3>=2.0",
+    "pytorch-forecasting>=1.0",
+    "gymnasium>=0.29",
+]
+gbm = [
+    "lightgbm>=4.0",
+]
+torch = [
+    "torch>=2.0",
+]
+rl = [
+    "sb3-contrib>=2.0",
+    "stable-baselines3>=2.0",
+    "torch>=2.0",
+    "gymnasium>=0.29",
+]
+neural = [
+    "pytorch-forecasting>=1.0",
+    "torch>=2.0",
+]
+learning = [
+    "lightgbm>=4.0",
+    "torch>=2.0",
+    "sb3-contrib>=2.0",
+    "stable-baselines3>=2.0",
+    "pytorch-forecasting>=1.0",
+    "gymnasium>=0.29",
 ]
 
 [project.urls]
@@ -100,6 +134,10 @@ omit = [
     "deepbullwhip/optimize/network_design.py",
     "deepbullwhip/diagnostics/graphviz_viz.py",
     "deepbullwhip/render/_graphviz.py",
+    "deepbullwhip/policy/learning/*",
+    "deepbullwhip/forecast/learning/*",
+    "deepbullwhip/forecast/deepar.py",
+    "deepbullwhip/ext/__init__.py",
 ]
 
 [tool.coverage.report]

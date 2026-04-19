@@ -38,6 +38,7 @@ def assess(spec: Spec) -> None:
         _assess_registry(c)
         _assess_schema(c)
         _assess_network(c)
+        _assess_extensions(c)
 
     report = c.build_report(summary="DeepBullwhip V&V assessment")
 
@@ -464,6 +465,137 @@ def _assess_network(c: EvidenceCollector) -> None:
     roundtrip_ok = orig_nodes == round_nodes and orig_edges == round_edges
     c.check("REQ-NET-002", roundtrip_ok,
             message=f"nodes={orig_nodes == round_nodes}, edges={orig_edges == round_edges}")
+
+
+# ── Learning extensions (deepbullwhip.ext) ────────────────────────────────
+
+
+def _assess_extensions(c: EvidenceCollector) -> None:
+    import math
+
+    import numpy as np
+    import pandas as pd
+
+    import deepbullwhip.ext  # noqa: F401
+    from deepbullwhip.benchmark.runner import BenchmarkRunner
+    from deepbullwhip.registry import get, get_class, list_registered
+
+    reg = list_registered()
+    policies = set(reg["policy"])
+    forecasters = set(reg["forecaster"])
+    metrics = set(reg["metric"])
+
+    need_pol = {"dqn_beer_game", "recurrent_ppo", "dcl", "e2e_newsvendor"}
+    need_fc = {"nbeats", "tft", "lightgbm_quantile", "lstm_multistep"}
+    need_met = {
+        "RFU",
+        "OSR",
+        "PeakBWR",
+        "ExpectedShortfall",
+        "InventoryTurnover",
+        "DampingRatio",
+    }
+
+    c.check(
+        "REQ-EXT-001",
+        need_pol <= policies,
+        message=f"missing={sorted(need_pol - policies)}",
+    )
+    c.check(
+        "REQ-EXT-002",
+        need_fc <= forecasters,
+        message=f"missing={sorted(need_fc - forecasters)}",
+    )
+    c.check(
+        "REQ-EXT-003",
+        need_met <= metrics,
+        message=f"missing={sorted(need_met - metrics)}",
+    )
+
+    pol_ok = True
+    for name in need_pol:
+        cls = get_class("policy", name)
+        policy = cls(lead_time=4, service_level=0.9)
+        for ip, fm, fs in [(10.0, 12.0, 2.0), (-5.0, 15.0, 3.0), (50.0, 8.0, 1.0)]:
+            q = policy.compute_order(ip, fm, fs)
+            if not (isinstance(q, float) and math.isfinite(q) and q >= 0.0):
+                pol_ok = False
+    c.check("REQ-EXT-004", pol_ok, message="Extension policies: non-negative finite orders")
+
+    rng = np.random.default_rng(0)
+    hist = 100 + 5 * np.sin(np.linspace(0, 8 * np.pi, 80)) + rng.normal(0, 3, 80)
+    fc_forecast_ok = True
+    fc_roll_ok = True
+    for name in need_fc:
+        f = get("forecaster", name)
+        mean, std = f.forecast(hist)
+        if not (
+            math.isfinite(mean)
+            and math.isfinite(std)
+            and mean >= 0.0
+            and std >= 0.0
+        ):
+            fc_forecast_ok = False
+        fm, fs = f.generate_forecasts(hist)
+        if not (
+            fm.shape == hist.shape
+            and fs.shape == hist.shape
+            and np.all(np.isfinite(fm))
+            and np.all(np.isfinite(fs))
+            and np.all(fm >= 0.0)
+            and np.all(fs >= 0.0)
+        ):
+            fc_roll_ok = False
+    c.check("REQ-EXT-005", fc_forecast_ok, message="Extension forecasters: forecast() contract")
+    c.check("REQ-EXT-006", fc_roll_ok, message="Extension forecasters: generate_forecasts arrays")
+
+    runner = BenchmarkRunner(T=52, N=3, seed=42)
+    df = runner.run(
+        policies=[
+            "order_up_to",
+            "dcl",
+            "recurrent_ppo",
+            "e2e_newsvendor",
+            ("dqn_beer_game", {"state_window": 4}),
+        ],
+        forecasters=[
+            "naive",
+            "moving_average",
+            "nbeats",
+            "tft",
+            "lightgbm_quantile",
+            "lstm_multistep",
+        ],
+        metrics=[
+            "BWR",
+            "CUM_BWR",
+            "FILL_RATE",
+            "TC",
+            "NSAmp",
+            "RFU",
+            "OSR",
+            "PeakBWR",
+            "ExpectedShortfall",
+            "InventoryTurnover",
+            "DampingRatio",
+        ],
+    )
+    expected_rows = 5 * 6 * 4 * 11
+    row_ok = isinstance(df, pd.DataFrame) and len(df) == expected_rows
+    c.check(
+        "REQ-EXT-007",
+        row_ok,
+        message=f"rows={len(df) if isinstance(df, pd.DataFrame) else 0}, expected={expected_rows}",
+    )
+
+    nan_rows = df[df["value"].isna()]
+    nan_ok = set(nan_rows["metric"].unique()) <= {"DampingRatio"}
+    frac_nan = float(df["value"].isna().mean()) if len(df) else 1.0
+    c.check(
+        "REQ-EXT-008",
+        nan_ok and frac_nan < 0.2,
+        message=f"nan_metrics={set(nan_rows['metric'].unique())}, nan_frac={frac_nan:.3f}",
+    )
 
 
 if __name__ == "__main__":

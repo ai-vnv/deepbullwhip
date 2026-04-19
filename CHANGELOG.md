@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-04-19
+
+### Added
+
+- **`deepbullwhip.ext`**: optional learning policies (`dqn_beer_game`, `recurrent_ppo`, `dcl`, `e2e_newsvendor`), forecasters (`nbeats`, `tft`, `lightgbm_quantile`, `lstm_multistep`), and metrics (`RFU`, `OSR`, `PeakBWR`, `ExpectedShortfall`, `InventoryTurnover`, `DampingRatio`) with lazy or fallback paths for minimal installs.
+- **Optional dependency groups** in `pyproject.toml`: `gbm`, `torch`, `rl`, `neural`, `learning` (plus `all` extended).
+- **`scripts/run_learning_leaderboard.py`**: policy×forecaster composite leaderboard CLI.
+- **V&V**: extension requirements `REQ-EXT-001`–`REQ-EXT-008` in `vnvspec.yaml`, evidence in `scripts/vnv_assess.py`, and `tests/test_vnvspec.py` (`vnvspec validate` + assessment script). `dev` extras include `vnvspec`, `typer`, and `rich`.
+
+### Changed
+
+- **Benchmark leaderboard** (`benchmarks/run_leaderboard.py`): single combined interactive **`docs/leaderboard.html`** with checklists for demand, policy, forecaster, and metric columns; short **`docs/LEADERBOARD.md`** embeds it. CLI flags for dimensions, `--compute-metrics`, and `--default-metrics` (defaults align with `BenchmarkRunner`).
+
+[0.5.0]: https://github.com/ai-vnv/deepbullwhip/releases/tag/v0.5.0
+
 ## [0.2.0] - 2026-04-10
 
 ### Added

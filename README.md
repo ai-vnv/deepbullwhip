@@ -66,7 +66,7 @@ For development:
 ```bash
 git clone https://github.com/ai-vnv/deepbullwhip.git
 cd deepbullwhip
-pip install -e ".[dev]"
+pip install -e ".[dev,vnv]"
 ```
 
 ### Dependencies
@@ -367,13 +367,14 @@ tex = render_graph(tree, backend="tikz", theme="ieee")  # For LaTeX papers
 ## Benchmark Leaderboard
 
 See the [Benchmark Leaderboard](https://ai-vnv.github.io/deepbullwhip/LEADERBOARD/) on the docs site
-([source](docs/LEADERBOARD.md)) for the latest benchmark results across all
-registered forecasters, policies, and demand generators.
+([source](docs/LEADERBOARD.md)) for an interactive table: pick demand, policy, forecaster, and metric
+columns via checklists. Defaults match `BenchmarkRunner` metrics (`BWR`, `CUM_BWR`, `FILL_RATE`, `TC`).
 
-Run it yourself:
+Run it yourself (writes `docs/leaderboard.html` plus a short `docs/LEADERBOARD.md`):
 
 ```bash
 python benchmarks/run_leaderboard.py
+python benchmarks/run_leaderboard.py --help   # --demands, --policies, --forecasters, --compute-metrics, …
 ```
 
 ## Contributing a New Component
@@ -781,5 +782,5 @@ Developed and maintained by the [AI V&V Lab](https://ai-vnv.kfupm.io) at KFUPM.
 [repo-url]:   https://github.com/ai-vnv/deepbullwhip
 [lic-badge]:  https://img.shields.io/badge/License-MIT-yellow.svg
 [lic-url]:    https://opensource.org/licenses/MIT
-[ver-badge]:  https://img.shields.io/badge/version-0.4.1-orange
+[ver-badge]:  https://img.shields.io/badge/version-0.5.0-orange
 [rel-url]:    https://github.com/ai-vnv/deepbullwhip/releases
